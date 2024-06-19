@@ -1,0 +1,19 @@
+{% load static %}
+<div class="col-md-12 grid-margin stretch-card">
+  <div class="card">
+    <div class="card-body">
+      <h4 class="card-title">Controle de equipamentos</h4>
+      <div class="mt-3">
+        <a href="{% url 'catalogo_de_equipamentos' type id %}">
+            <button type="button" class="btn btn-secondary">Catálogo de equipamentos</button>
+        </a>
+        <a href="{% url 'equipamentos_disponiveis' type id %}">
+          <button type="button" class="btn btn-secondary">Equipamentos Disponiveis</button>
+        </a>
+        <a href="{% url 'equipamentos_desmobilizados' type id %}">
+          <button type="button" class="btn btn-secondary">Equipamentos Desmobilizados</button>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

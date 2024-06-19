@@ -1,0 +1,80 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+
+{% include 'partials/_header.html' %}
+<body>
+  <div class="container-scroller">
+    {% include 'partials/_barra_superior.html' %}
+    <div class="container-fluid page-body-wrapper">
+      {% include 'partials/_menu_lateral.html' %}
+      <div class="main-panel">
+        <div class="content-wrapper">
+          <div class="row">
+            <div class="col-md-12 grid-margin">
+              <div class="row">
+                <div class="col-12 col-xl-8 mb-4 mb-xl-0">
+                    <h3 class="font-weight-bold">Iniciar servico</h3>
+                </div>
+              </div>
+            </div>
+          </div>
+          <form action="{% url 'iniciar_servico' servico_agendado_id type id%}" method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+              {% csrf_token %}
+                <div class="form-group">
+                  {% for field in servico_agendado_form.visible_fields %}
+                    <div class="form-group">
+                      <label for="{{ field.id_for_label }}" >
+                        {{ field.label }}
+                      </label>
+                      {{ field }}
+                    </div>
+                  {% endfor %}
+                </div>
+              <div class="modal-footer">
+                <a>
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal"> Fechar </button>
+                </a>
+                <a>
+                  <button type="submit" class="btn btn-success" data-dismiss="modal"> Salvar </button>
+                </a>
+                <a data-toggle="modal" data-target="#modal">
+                  <button type="button" class="btn btn-danger" data-dismiss="modal"> Concluir </button>
+                </a>
+              </div>
+            </div>
+          </form>
+          <div class="modal fade" id="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-body">
+                  <div class="col-md-12 grid-margin stretch-card">
+                    <div class="card">
+                      <div class="card-body">
+                        <h4 class="card-title">Concluir serviço {{ servico_agendado.descricao_servico }}</h4>
+                          <div class="modal-footer">
+                            <a>
+                              <button type="button" class="btn btn-secondary" data-dismiss="modal">Voltar</button>
+                            </a>
+                            <a href="{% url 'concluir_servico' servico_id type id %}">
+                              <button type="button" class="btn btn-danger" >Concluir</button>
+                            </a>
+                          </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% include 'partials/_footer.html' %}
+      </div>
+    </div>
+  </div>
+  {% include 'partials/_static_js.html' %}
+</body>
+
+</html>
+

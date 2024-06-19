@@ -1,0 +1,21 @@
+{% load static %}
+<div class="col-md-12 grid-margin stretch-card">
+  <div class="card">
+    <div class="card-body">
+      <h4 class="card-title">Controle de unidades</h4>
+      <div class="mt-3">
+        {%  if type == 'Administrador' %}
+          <a href="{% url 'unidades' type id %}">
+            <button type="button" class="btn btn-secondary">unidades</button>
+          </a>
+        {% endif %}
+        <a href="{% url 'localidades' type id %}">
+          <button type="button" class="btn btn-secondary">localidades</button>
+        </a>
+        <a href="{% url 'areas' type id %}">
+          <button type="button" class="btn btn-secondary">Áreas</button>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

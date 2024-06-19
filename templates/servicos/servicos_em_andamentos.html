@@ -1,0 +1,46 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+
+{% include 'partials/_header.html' %}
+<body>
+  <div class="container-scroller">
+    {% include 'partials/_barra_superior.html' %}
+    <div class="container-fluid page-body-wrapper">
+      {% include 'partials/_menu_lateral.html' %}
+      <div class="main-panel">
+        <div class="content-wrapper">
+          <div class="row">
+            <div class="col-md-12 grid-margin">
+              <div class="row">
+                <div class="col-12 col-xl-8 mb-4 mb-xl-0">
+                  <h3 class="font-weight-bold">Seriços em andamento</h3>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% for dado in dados %}
+            <div class="col-md-12 grid-margin transparent">
+                <div class="row">
+                  <div class="col-md-12 mb-5 stretch-card transparent">
+                    <div class="card card-tale">
+                      <div class="card-body">
+                        <p class="mb-4">{{ dado.servico.descricao_servico }} </p>
+                        <p class="fs-30 mb-2"> Iniciado em {{ dado.data_hora_chegada_da_area }} </p>
+                        <p></p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+            </div>
+          {% endfor %}
+        </div>
+        {% include 'partials/_footer.html' %}
+      </div>
+    </div>
+  </div>
+  {% include 'partials/_static_js.html' %}
+</body>
+
+</html>
+

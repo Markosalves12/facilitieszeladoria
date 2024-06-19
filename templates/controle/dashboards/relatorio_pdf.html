@@ -1,0 +1,102 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+{% include 'partials/_header.html' %}
+
+<body>
+  <div class="container-scroller">
+    {% include 'partials/_barra_superior.html' %}
+    <!-- partial -->
+    <div class="container-fluid page-body-wrapper">
+      {% include 'partials/_menu_lateral.html' %}
+      <div class="main-panel">
+        <div class="content-wrapper">
+          {% include 'partials/_messages.html' %}
+          <div class="row">
+            <div class="col-md-12 grid-margin">
+              <div class="row">
+                <div class="col-12 col-xl-8 mb-4 mb-xl-0">
+                  <h3 class="font-weight-bold">Histórico de serviços e relatório
+                  </h3>
+                </div>
+              </div>
+            </div>
+          </div>
+          <form id="formulariodebusca" method="POST" class="form-inline" enctype="multipart/form-data">
+            <div class="form-group">
+              {% csrf_token %}
+                <div class="form-inline">
+                  {% for field in forms_filtro.visible_fields %}
+                    <div class="form-inline">
+                      <label for="{{ field.id_for_label }}" >
+                        {{ field.label }}
+                      </label>
+                      {{ field }}
+                    </div>
+                  {% endfor %}
+                </div>
+            </div>
+            <div>
+              <button type="submit" class="btn btn-success">Buscar</button>
+            </div>
+          </form>
+          <div class="row">
+            <div class="col-md-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  {% for dado_historico in elementos_paginados %}
+                    <blockquote class="blockquote">
+                      <p class="mb-0" style="font-size: 16px;">Descrição: {{ dado_historico.descricao_servico }}</p>
+                      <p class="mb-0" style="font-size: 16px;">Data de inicio: {{ dado_historico.data_inicio }}</p>
+                      <p class="mb-0" style="font-size: 16px;">Data de conclusão: {{ dado_historico.data_conclusao }}</p></br>
+                      <p class="mb-0" style="font-size: 16px;">Colaboradores escalados</p>
+                        {% for colaborador  in dado_historico.colaboradores_escalados.all %}
+                          <p class="mb-0" style="font-size: 14px;">{{ colaborador.nome }}</p>
+                        {% endfor %}
+                      </br>
+                      <p class="mb-0" style="font-size: 16px;">Serviços escalados</p>
+                        {% for servico  in dado_historico.servicos_escalados.all %}
+                          <p class="mb-0" style="font-size: 14px;">{{ servico.servico }}</p>
+                        {% endfor %}
+                      </br>
+                      <p class="mb-0" style="font-size: 16px;">Área atendida: {{ dado_historico.area }}</p>
+                      </br>
+                      <p class="mb-0" style="font-size: 16px;"></p>
+                      <p class="mb-0" style="font-size: 16px;">Antes</p>
+                      </br>
+                      {% if dado_historico.foto_inicio == "" or dado_historico.foto_inicio == null %}
+                          <img class="card__imagem" src="{% static 'assets/image not found (1).png' %}" alt="foto">
+                      {% else %}
+                          <img src="{{ dado_historico.foto_inicio.url }}" alt="foto">
+                      {% endif %}
+                      </br>
+                      <p class="mb-0" style="font-size: 16px;">Depois</p>
+                      {% if dado_historico.foto == "" or dado_historico.foto == null %}
+                          <img class="card__imagem" src="{% static 'assets/image not found (1).png' %}" alt="foto">
+                      {% else %}
+                          <img src="{{ dado_historico.foto.url }}" alt="foto">
+                      {% endif %}
+                    </blockquote>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+          </div>
+          {% include 'partials/_paginate.html' %}
+          <div class="mt-3" >
+            <a href="{% url 'exportar_pdf' type id datastart datafim empresas unidades localidades negocios carteira %}">
+              <button type="button" class="btn btn-secondary"> Exportar PDF </button>
+            </a>
+          </div>
+        </div>
+        {% include 'partials/_footer.html' %}
+      </div>
+    </div>
+  </div>
+
+{% include 'partials/_static_js.html' %}
+
+</body>
+
+</html>

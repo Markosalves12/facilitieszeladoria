@@ -1,0 +1,40 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+
+{% include 'partials/_header.html' %}
+<body>
+  <div class="container-scroller">
+    {% include 'partials/_barra_superior.html' %}
+    <div class="container-fluid page-body-wrapper">
+      {% include 'partials/_menu_lateral.html' %}
+      <div class="main-panel">
+        <div class="content-wrapper">
+          <div class="row">
+            <div class="col-md-12 grid-margin">
+              <div class="row">
+                <div class="col-12 col-xl-8 mb-4 mb-xl-0">
+                  <h3 class="font-weight-bold">Áreas verdes {{ unidade }}</h3>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-12 grid-margin stretch-card">
+            <div class="card">
+              <div class="card-body">
+                <iframe src={{ link }} style="width: 100%; height: 100vh; border: none;"></iframe>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% include 'partials/_footer.html' %}
+      </div>
+    </div>
+  </div>
+
+{% include 'partials/_static_js.html' %}
+
+</body>
+
+</html>
+

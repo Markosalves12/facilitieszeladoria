@@ -1,0 +1,9 @@
+{% load static %}
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var cells = document.querySelectorAll('.font-weight-medium');
+        cells.forEach(function(cell) {
+            cell.innerHTML = cell.innerHTML.replace(/\|/g, "<br>");
+        });
+    });
+</script>

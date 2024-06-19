@@ -1,0 +1,24 @@
+{% load static%}
+<div class="col-md-12 grid-margin stretch-card">
+  <div class="card">
+    <div class="card-body">
+      <div class="pagination">
+        <span class="step-links">
+          {% if elementos_paginados.has_previous %}
+            <a href="?page=1">&laquo; Primeira</a>
+            <a href="?page={{ elementos_paginados.previous_page_number }}">Anterior</a>
+          {% endif %}
+
+          <span class="current">
+            Página {{ elementos_paginados.number }} de {{ elementos_paginados.paginator.num_pages }}.
+          </span>
+
+          {% if elementos_paginados.has_next %}
+            <a href="?page={{ elementos_paginados.next_page_number }}">Próxima</a>
+            <a href="?page={{ elementos_paginados.paginator.num_pages }}">Última &raquo;</a>
+          {% endif %}
+        </span>
+      </div>
+    </div>
+  </div>
+</div>

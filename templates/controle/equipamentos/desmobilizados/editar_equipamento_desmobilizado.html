@@ -1,0 +1,86 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+
+{% include 'partials/_header.html' %}
+
+<body>
+  <div class="container-scroller">
+    {% include 'partials/_barra_superior.html' %}
+    <div class="container-fluid page-body-wrapper">
+      {% include 'partials/_menu_lateral.html' %}
+      <div class="main-panel">
+        <div class="content-wrapper">
+          {% include 'partials/_messages.html' %}
+          <div class="row">
+            <div class="col-md-12 grid-margin">
+              <div class="row">
+                <div class="col-12 col-xl-8 mb-4 mb-xl-0">
+                    <h3 class="font-weight-bold">Editar equipamento
+                      {{ equipamento_desmobilizado_form.matricula.value }}</h3>
+                </div>
+              </div>
+            </div>
+          </div>
+          <form action="{% url 'editar_equipamento_desmobilizado' type equipamento_desmobilizado_id id%}" method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+              {% csrf_token %}
+                <div class="form-group">
+                  {% for field in equipamento_desmobilizado_form.visible_fields %}
+                    <div class="form-group">
+                      <label for="{{ field.id_for_label }}" >
+                        {{ field.label }}
+                      </label>
+                      {{ field }}
+                    </div>
+                  {% endfor %}
+                </div>
+              <div class="modal-footer">
+                <a href="{% url 'equipamentos_desmobilizados' type id%}">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal"> Fechar </button>
+                </a>
+                <a>
+                  <button type="submit" class="btn btn-success" data-dismiss="modal"> Salvar </button>
+                </a>
+                <a data-toggle="modal" data-target="#modal">
+                  <button type="button" class="btn btn-success" data-dismiss="modal"> Reabilitar equipamento </button>
+                </a>
+              </div>
+            </div>
+          </form>
+          <div class="modal fade" id="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-body">
+                  <div class="col-md-12 grid-margin stretch-card">
+                    <div class="card">
+                      <div class="card-body">
+                        <h4 class="card-title">Reabilitar equipamento {{ equipamento_desmobilizado_form.matricula.value }}</h4>
+                        <form action="{% url 'reabilitar_equipamento_desmobilizado' type equipamento_desmobilizado_id id %}" method="POST" enctype="multipart/form-data">
+                          {% csrf_token %}
+                          <div class="modal-footer">
+                            <a>
+                              <button type="button" class="btn btn-secondary" data-dismiss="modal">Voltar</button>
+                            </a>
+                            <a href="{% url 'reabilitar_equipamento_desmobilizado' type equipamento_desmobilizado_id id %}">
+                              <button type="button" class="btn btn-success" >Reabilitar</button>
+                            </a>
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% include 'partials/_footer.html' %}
+      </div>
+    </div>
+  </div>
+  {% include 'partials/_static_js.html' %}
+</body>
+
+</html>
+

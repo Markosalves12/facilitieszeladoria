@@ -1,0 +1,161 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+
+{% include 'partials/_header.html' %}
+<body>
+  <div class="container-scroller">
+    {% include 'partials/_barra_superior.html' %}
+    <div class="container-fluid page-body-wrapper">
+      {% include 'partials/_menu_lateral.html' %}
+      <div class="main-panel">
+        <div class="content-wrapper">
+          <div class="row">
+            <div class="col-md-12 grid-margin">
+              <div class="row">
+                <div class="col-12 col-xl-8 mb-4 mb-xl-0">
+                  <h3 class="font-weight-bold">Serviços agendados para {{ nome }}</h3>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-12 grid-margin transparent">
+            <div class="row">
+                <div class="col-md-3 mb-5 stretch-card transparent">
+                  <div class="card card-tale">
+                    <div class="card-body">
+                      <p class="mb-4">Servicos agendados </p>
+                      <p class="fs-30 mb-2"> {{ agendamentos }} </p>
+                      <p></p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-3 mb-5 stretch-card transparent">
+                  <div class="card card-tale">
+                    <div class="card-body">
+                      <p class="mb-4">Servicos em andamento </p>
+                      <p class="fs-30 mb-2"> {{ em_andamento }} </p>
+                      <p></p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-3 mb-5 stretch-card transparent">
+                  <div class="card card-light-danger">
+                    <div class="card-body">
+                      <p class="mb-4">Servicos atrasados</p>
+                      <p class="fs-30 mb-2"> {{ atrasados }} </p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-3 mb-5 stretch-card transparent">
+                  <div class="card card-tale">
+                    <div class="card-body">
+                      <p class="mb-4">Serviços próximo</p>
+                      <p class="fs-30 mb-2">{{ proximos }}</p>
+                    </div>
+                  </div>
+                </div>
+<!--                <div class="col-md-3 mb-5 stretch-card transparent">-->
+<!--                  {% if carteira_equipamentos.equipamentos_disponiveis_velhos_percent > 80 %}-->
+<!--                    <div class="card card-light-danger">-->
+<!--                    <div class="card-body">-->
+<!--                      <p class="mb-4">Equipamentos Velhos</p>-->
+<!--                      <p class="fs-30 mb-2">{{ carteira_equipamentos.equipamentos_disponiveis_velhos }}</p>-->
+<!--                      <p>{{ carteira_equipamentos.equipamentos_disponiveis_velhos_percent }}%</p>-->
+<!--                    </div>-->
+<!--                  </div>-->
+<!--                  {% else %}-->
+<!--                    <div class="card card-tale">-->
+<!--                    <div class="card-body">-->
+<!--                      <p class="mb-4">Equipamentos Velhos</p>-->
+<!--                      <p class="fs-30 mb-2">{{ carteira_equipamentos.equipamentos_disponiveis_velhos }}</p>-->
+<!--                      <p>{{ carteira_equipamentos.equipamentos_disponiveis_velhos_percent }}%</p>-->
+<!--                    </div>-->
+<!--                  </div>-->
+<!--                  {% endif %}-->
+<!--                </div>-->
+              </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <p class="card-title mb-0">Serviços escalados</p>
+                  <div class="table-responsive">
+                    <table class="table table-striped table-borderless">
+                      <thead>
+                        <tr>
+                          <th>Serviço </th>
+                          <th>Descrição do serviço</th>
+                          <th>Data de início</th>
+                          <th>Colaboradores escalados</th>
+                          <th>Periodicidade</th>
+                          <th>Status</th>
+                          <th>Ações</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for dado in dados %}
+                          <tr>
+                              <td class="font-weight-medium">
+                                {% for servico  in dado.servicos_escalados.all %}
+                                  {{ servico.servico }}<br>
+                                {% endfor %}
+                              </td>
+                              {% if dado.status == "Em andamento" %}
+                                <td>
+                                  <a href="{% url 'login' %}">
+                                    <label class="font-weight-bold badge badge-success" >
+                                      {{ dado.descricao_servico }}
+                                    </label>
+                                  </a>
+                                </td>
+                              {% else %}
+                                <td>
+                                  <label class="font-weight-bold">
+                                    {{ dado.descricao_servico }}
+                                  </label>
+                                </td>
+                              {% endif %}
+                              <td class="font-weight-bold" >{{ dado.data_inicio }}</td>
+                              <td class="font-weight-medium">
+                                {% for colaborador in dado.colaboradores_escalados.all %}
+                                    {{ colaborador.nome }}<br>
+                                {% endfor %}
+                              </td>
+                              <td class="font-weight-medium" >{{ dado.periodicidade }}</td>
+                              {% if dado.status == "Em andamento" %}
+                                <td> <label class="font-weight-medium badge badge-success">Em andamento</label> </td>
+                              {% elif dado.status_agendamento < 0 %}
+                                <td> <label class="font-weight-medium badge badge-danger">Atrasado</label> </td>
+                              {% elif dado.status_agendamento > 7 %}
+                                <td> <label class="font-weight-medium badge badge-success">Agendado</label> </td>
+                              {% else %}
+                                <td> <label class="font-weight-medium badge badge-warning">Ini. em {{dado.status_agendamento}} dias</label> </td>
+                              {% endif %}
+                              <td>
+                                <label>
+                                  <a href="{% url 'iniciar_servico' dado.id type id%}">
+                                    <button type="button" class="btn btn-inverse-info btn-fw">Editar</button>
+                                  </a>
+                                </label>
+                              </td>
+                          </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% include 'partials/_footer.html' %}
+      </div>
+    </div>
+  </div>
+  {% include 'partials/_static_js.html' %}
+</body>
+
+</html>
+

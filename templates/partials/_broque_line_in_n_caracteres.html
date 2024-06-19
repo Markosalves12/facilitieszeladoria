@@ -1,0 +1,14 @@
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    // Obter todas as células com o padrão de ID
+    var cells = document.querySelectorAll('[id^="gestor-funcoes-"]');
+    cells.forEach(function(cell) {
+      var texto = cell.innerHTML;
+      var textoFormatado = '';
+      for (var i = 0; i < texto.length; i += 30) {
+        textoFormatado += texto.substr(i, 30) + "<br>";
+      }
+      cell.innerHTML = textoFormatado;
+    });
+  });
+</script>

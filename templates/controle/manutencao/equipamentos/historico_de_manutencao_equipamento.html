@@ -1,0 +1,58 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+{% include 'partials/_header.html' %}
+
+<body>
+  <div class="container-scroller">
+    {% include 'partials/_barra_superior.html' %}
+    <!-- partial -->
+    <div class="container-fluid page-body-wrapper">
+      {% include 'partials/_menu_lateral.html' %}
+      <div class="main-panel">
+        <div class="content-wrapper">
+          {% include 'partials/_messages.html' %}
+          <div class="row">
+            <div class="col-md-12 grid-margin">
+              <div class="row">
+                <div class="col-12 col-xl-8 mb-4 mb-xl-0">
+                  <h3 class="font-weight-bold">Histórico de manutenção
+                    {{ equipamento_disponivel.catalogo_equipamento.nome }} |
+                    {{ equipamento_disponivel.matricula }}
+                  </h3>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  {% for elemento  in elementos_paginados   %}
+                    <blockquote class="blockquote">
+                      <p class="mb-0">{{ elemento.data_hora_inicio }}</p>
+                      <p class="mb-0">{{ dado_historico.data_hora_fim }}</p>
+                      <p class="mb-0">{{ elemento.descricao_servico }}</p>
+                      <p class="mb-0">{{ elemento.descricao_motivo }}</p>
+                      <p class="mb-0">{{ elemento.tipo_manutencao.tipo_manutencao }}</p>
+                      <div class="modal-footer">
+                        <a href="{% url 'editar_manutencao_equipamento' type elemento.id_random id %}">
+                          <button type="submit" class="btn btn-success" data-dismiss="modal"> Editar </button>
+                        </a>
+                      </div>
+                    </blockquote>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+            {% include 'partials/_paginate.html' %}
+          </div>
+        </div>
+        {% include 'partials/_footer.html' %}
+      </div>
+    </div>
+  </div>
+  {% include 'partials/_static_js.html' %}
+</body>
+</html>

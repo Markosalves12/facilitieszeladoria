@@ -1,0 +1,19 @@
+{% load static %}
+<div class="col-md-12 grid-margin stretch-card">
+  <div class="card">
+    <div class="card-body">
+      <h4 class="card-title">Controle de ferramentas</h4>
+      <div class="mt-3">
+        <a href="{% url 'catalogo_de_ferramentas' type id %}">
+          <button type="button" class="btn btn-secondary">Catálogo de ferramentas</button>
+        </a>
+        <a href="{% url 'ferramentas_disponiveis' type id %}">
+          <button type="button" class="btn btn-secondary">Ferramentas disponíveis</button>
+        </a>
+        <a href="{% url 'ferramentas_desmobilizadas' type id %}">
+          <button type="button" class="btn btn-secondary">Ferramentas desmobilizadas</button>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

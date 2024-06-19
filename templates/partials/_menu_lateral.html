@@ -1,0 +1,107 @@
+{% load static %}
+
+<nav class="sidebar sidebar-offcanvas" id="sidebar">
+<ul class="nav">
+  {% if "suzano.com" in emailuser %}
+    <li class="nav-item" >
+      <a class="nav-link" data-toggle="collapse" href="#realtorios" aria-expanded="false" aria-controls="realtorios">
+        <i class="icon-columns menu-icon"></i>
+        <span class="menu-title">Reatórios</span>
+        <i class="menu-arrow"></i>
+      </a>
+      <div class="collapse" id="realtorios">
+        <ul class="nav flex-column sub-menu">
+          <li class="nav-item"><a class="nav-link" href="{% url 'relatoriodeservicos' %}">Serviços xlsx</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'relatoriopdf' %}">Serviços pdf</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'relatoriomanutencaoequipamentos' %}">Manutenção</br>equipamentos</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'relatoriomanutencaoferramentas' %}">Manutenção</br>ferramentas</a></li>
+        </ul>
+      </div>
+    </li>
+  {% endif %}
+
+  <li class="nav-item">
+    <a class="nav-link" data-toggle="collapse" href="#formelements" aria-expanded="false" aria-controls="formelements">
+      <i class="icon-layout menu-icon"></i>
+      <span class="menu-title">Areas verdes</span>
+      <i class="menu-arrow"></i>
+    </a>
+    <div class="collapse" id="formelements">
+      <ul class="nav flex-column sub-menu">
+        <li class="nav-item">
+          {% for nome_unidade in unidade_info %}
+            <a class="nav-link" href="{% url 'areas_verdes' nome_unidade.unidade nome_unidade.link %}">
+              {{ nome_unidade.unidade }}
+            </a>
+          {% endfor %}
+        </li>
+      </ul>
+    </div>
+  </li>
+
+  <li class="nav-item" >
+    <a class="nav-link" data-toggle="collapse" href="#charts" aria-expanded="false" aria-controls="charts">
+      <i class="icon-columns menu-icon"></i>
+      <span class="menu-title">Equipamentos</span>
+      <i class="menu-arrow"></i>
+    </a>
+    <div class="collapse" id="charts">
+      <ul class="nav flex-column sub-menu">
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'disponibilidade_equipamentos'  %}">
+            Disponibilidade
+          </a>
+        </li>
+      </ul>
+    </div>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" data-toggle="collapse" href="#tables" aria-expanded="false" aria-controls="tables">
+      <i class="icon-columns menu-icon"></i>
+      <span class="menu-title">Ferramentas</span>
+      <i class="menu-arrow"></i>
+    </a>
+    <div class="collapse" id="tables">
+      <ul class="nav flex-column sub-menu">
+        <li class="nav-item"><a class="nav-link" href="{% url 'disponibilidade_ferramentas' %}">Disponibilidade</a></li>
+      </ul>
+    </div>
+  </li>
+  {% if type == 'Colaborador' %}
+    <li class="nav-item">
+      <a class="nav-link" data-toggle="collapse" href="#icons" aria-expanded="false" aria-controls="icons">
+        <i class="icon-bar-graph menu-icon"></i>
+        <span class="menu-title">Serviços</span>
+        <i class="menu-arrow"></i>
+      </a>
+      <div class="collapse" id="icons">
+        <ul class="nav flex-column sub-menu">
+          <li class="nav-item"> <a class="nav-link" href="{% url 'servicos_concluidos' type id %}">Concluidos</a></li>
+          <li class="nav-item"> <a class="nav-link" href="{% url 'servicos_agendados' type id %}">Agendados</a></li>
+        </ul>
+      </div>
+    </li>
+  {% endif %}
+  <li class="nav-item">
+    <a class="nav-link" data-toggle="collapse" href="#auth" aria-expanded="false" aria-controls="auth">
+      <i class="icon-head menu-icon"></i>
+      <span class="menu-title">Usuários</span>
+      <i class="menu-arrow"></i>
+    </a>
+    <div class="collapse" id="auth">
+      <ul class="nav flex-column sub-menu">
+        <li class="nav-item"> <a class="nav-link" href="{% url 'logout' %}"> Logout </a></li>
+      </ul>
+    </div>
+  </li>
+  {% if type != 'Colaborador' %}
+    <li class="nav-item">
+      <a class="nav-link" href="{% url 'painel_do_administrador' %}">
+        <i class="icon-paper menu-icon"></i>
+        <span class="menu-title">Painel de controle</span>
+      </a>
+    </li>
+  {% endif %}
+</ul>
+</nav>
+

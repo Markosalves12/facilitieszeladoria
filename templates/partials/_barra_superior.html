@@ -1,0 +1,22 @@
+{% load static %}
+<nav class="navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
+  <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
+  </div>
+  <div class="navbar-menu-wrapper d-flex align-items-center justify-content-end">
+    <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
+      <span class="icon-menu"></span>
+    </button>
+    <ul class="navbar-nav navbar-nav-right">
+    </ul>
+    <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-toggle="offcanvas">
+      <span class="icon-menu"></span>
+    </button>
+    {% if type == "Gestor" %}
+     <h6 class="font-weight-normal mb-0"> Bem vindo (a) {{ nome }} | {{ type }} | empresa: {{ empresa }} | unidade: {{ unidade }}</h6>
+    {% elif type == "Gerente" %}
+      <h6 class="font-weight-normal mb-0"> Bem vindo (a) {{ nome }} | {{ type }} | empresa: {{ empresa }} | unidade: {{ unidade }} | gestor: {{gestor}} {{emailgestor}}</h6>
+    {% else %}
+      <h6 class="font-weight-normal mb-0"> Bem vindo (a) {{ nome }} | {{ type }}</h6>
+    {% endif %}
+  </div>
+</nav>

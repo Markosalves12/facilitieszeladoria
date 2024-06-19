@@ -1,0 +1,62 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+
+{% include 'partials/_header.html' %}
+
+<body>
+  <div class="container-scroller">
+    {% include 'partials/_barra_superior.html' %}
+    <div class="container-fluid page-body-wrapper">
+      {% include 'partials/_menu_lateral.html' %}
+      <div class="main-panel">
+        <div class="content-wrapper">
+          {% include 'partials/_messages.html' %}
+          <div class="row">
+            <div class="col-md-12 grid-margin">
+              <div class="row">
+                <div class="col-12 col-xl-8 mb-4 mb-xl-0">
+                    <h3 class="font-weight-bold">Manutenção de equipamento
+                      {{ equipamento_disponivel.matricula }} |
+                      {{ equipamento_disponivel.empresa.nome }} |
+                      {{ equipamento_disponivel.empresa.unidade }}
+                    </h3>
+                </div>
+              </div>
+            </div>
+          </div>
+          <form action="{% url 'cadastro_manutencao_equipamento' type equipamento_disponivel_id id %}" method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+              {% csrf_token %}
+                <div class="form-group">
+                  {% for field in manutencao_equipaemnto_form.visible_fields %}
+                    <div class="form-group">
+                      <label for="{{ field.id_for_label }}" >
+                        {{ field.label }}
+                      </label>
+                      {{ field }}
+                    </div>
+                  {% endfor %}
+                </div>
+              <div class="modal-footer">
+                <a href="{% url 'manutencao_de_equipamentos' type id %}">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal"> Fechar </button>
+                </a>
+                <a>
+                  <button type="submit" class="btn btn-success" data-dismiss="modal"> Salvar </button>
+                </a>
+              </div>
+            </div>
+          </form>
+        </div>
+        {% include 'partials/_footer.html' %}
+      </div>
+    </div>
+  </div>
+
+{% include 'partials/_static_js.html' %}
+
+</body>
+
+</html>
+

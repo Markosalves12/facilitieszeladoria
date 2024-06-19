@@ -1,0 +1,48 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+{% include 'partials/_header.html' %}
+<body>
+  <div class="container-scroller">
+    {% include 'partials/_barra_superior.html' %}
+    <div class="container-fluid page-body-wrapper">
+      {% include 'partials/_menu_lateral.html' %}
+      <div class="main-panel">
+        <div class="content-wrapper">
+          <div class="row">
+            <div class="col-md-12 grid-margin">
+              <div class="row">
+                <div class="col-12 col-xl-8 mb-4 mb-xl-0">
+                  <h3 class="font-weight-bold">Controle do {{ type }}</h3>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            {% if type == 'Gestor' or type == 'Administrador' or type == 'Gerente' %}
+                {% include 'controle/partials/_unidades.html' %}
+            {% endif %}
+            {% if type == 'Administrador' %}
+                {% include 'controle/partials/_controle_de_gestores.html' %}
+                {% include 'controle/partials/_controle_de_empresas.html' %}
+            {% endif %}
+            {% if type == 'Gestor' or type == 'Administrador' %}
+              {% include 'controle/partials/_controle_de_gerentes.html' %}
+            {% endif %}
+            {% include 'controle/partials/_controle_de_colaboradores.html' %}
+            {% include 'controle/partials/_controle_de_equipamentos.html' %}
+            {% include 'controle/partials/_controle_de_ferramentas.html' %}
+            {% include 'controle/partials/_controle_de_materiais.html' %}
+            {% include 'controle/partials/_manutencao.html' %}
+            {% include 'controle/partials/_controle_de_servicos.html' %}
+          </div>
+        </div>
+        {% include 'partials/_footer.html' %}
+      </div>
+    </div>
+  </div>
+
+{% include 'partials/_static_js.html' %}
+
+</body>
+</html>

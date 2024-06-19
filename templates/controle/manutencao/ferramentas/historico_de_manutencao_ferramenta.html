@@ -1,0 +1,58 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+{% include 'partials/_header.html' %}
+
+<body>
+  <div class="container-scroller">
+    {% include 'partials/_barra_superior.html' %}
+    <!-- partial -->
+    <div class="container-fluid page-body-wrapper">
+      {% include 'partials/_menu_lateral.html' %}
+      <div class="main-panel">
+        <div class="content-wrapper">
+          {% include 'partials/_messages.html' %}
+          <div class="row">
+            <div class="col-md-12 grid-margin">
+              <div class="row">
+                <div class="col-12 col-xl-8 mb-4 mb-xl-0">
+                  <h3 class="font-weight-bold">Histórico de manutenção
+                    {{ ferramenta_disponivel.catalogo_ferramenta.nome }} |
+                    {{ ferramenta_disponivel.matricula }}
+                  </h3>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  {% for dado_historico in elementos_paginados %}
+                    <blockquote class="blockquote">
+                      <p class="mb-0" style="font-size: 16px;" >{{ dado_historico.data_hora_inicio }}</p>
+                      <p class="mb-0" style="font-size: 16px;">{{ dado_historico.data_hora_fim }}</p></br>
+                      <p class="mb-0" style="font-size: 16px;">{{ dado_historico.descricao_servico }}</p>
+                      <p class="mb-0" style="font-size: 16px;">{{ dado_historico.descricao_motivo }}</p>
+                      <p class="mb-0" style="font-size: 16px;">{{ dado_historico.tipo_manutencao.tipo_manutencao }}</p>
+                      <div class="modal-footer">
+                        <a href="{% url 'editar_manutencao_ferramenta' type dado_historico.id_random id %}">
+                          <button type="submit" class="btn btn-success" data-dismiss="modal"> Editar </button>
+                        </a>
+                      </div>
+                    </blockquote>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+          </div>
+          {% include 'partials/_paginate.html' %}
+        </div>
+        {% include 'partials/_footer.html' %}
+      </div>
+    </div>
+  </div>
+  {% include 'partials/_static_js.html' %}
+</body>
+</html>

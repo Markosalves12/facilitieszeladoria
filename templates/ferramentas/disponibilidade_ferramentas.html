@@ -1,0 +1,122 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+
+{% include 'partials/_header.html' %}
+
+<body>
+  <div class="container-scroller">
+    {% include 'partials/_barra_superior.html' %}
+    <div class="container-fluid page-body-wrapper">
+      {% include 'partials/_menu_lateral.html' %}
+      <div class="main-panel">
+        <div class="content-wrapper">
+          <div class="row">
+            <div class="col-md-12 grid-margin">
+              <div class="row">
+                <div class="col-12 col-xl-8 mb-4 mb-xl-0">
+                  <h3 class="font-weight-bold">Disponibilidade de ferramentas {{empresa}}</h3>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-12 grid-margin transparent">
+              <div class="row">
+                <div class="col-md-3 mb-5 stretch-card transparent">
+                  <div class="card card-tale">
+                    <div class="card-body">
+                      <p class="mb-4">Equipamentos Disponiveis </p>
+                      <p class="fs-30 mb-2"> {{ carteira_ferramentas.ferramentas_disponiveis }} </p>
+                      <p></p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-3 mb-5 stretch-card transparent">
+                  <div class="card card-tale">
+                    <div class="card-body">
+                      <p class="mb-4">Equipamentos novos</p>
+                      <p class="fs-30 mb-2"> {{ carteira_ferramentas.ferramentas_disponiveis_novos }} </p>
+                      <p> {{ carteira_ferramentas.ferramentas_disponiveis_novos_percent }}% </p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-3 mb-5 stretch-card transparent">
+                  <div class="card card-tale">
+                    <div class="card-body">
+                      <p class="mb-4">Equipamentos Seminovos</p>
+                      <p class="fs-30 mb-2">{{ carteira_ferramentas.ferramentas_disponiveis_semi_novos }}</p>
+                      <p>{{ carteira_ferramentas.ferramentas_disponiveis_semi_novos_percent }}%</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-3 mb-5 stretch-card transparent">
+                  {% if carteira_equipamentos.ferramentas_disponiveis_velhos_percent > 80 %}
+                    <div class="card card-light-danger">
+                    <div class="card-body">
+                      <p class="mb-4">Equipamentos Velhos</p>
+                      <p class="fs-30 mb-2">{{ carteira_ferramentas.ferramentas_disponiveis_velhos }}</p>
+                      <p>{{ carteira_ferramentas.ferramentas_disponiveis_velhos_percent }}%</p>
+                    </div>
+                  </div>
+                  {% else %}
+                    <div class="card card-tale">
+                    <div class="card-body">
+                      <p class="mb-4">Equipamentos Velhos</p>
+                      <p class="fs-30 mb-2">{{ carteira_ferramentas.ferramentas_disponiveis_velhos }}</p>
+                      <p>{{ carteira_ferramentas.ferramentas_disponiveis_velhos_percent }}%</p>
+                    </div>
+                  </div>
+                  {% endif %}
+                </div>
+              </div>
+          </div>
+
+
+          <div class="row">
+            <div class="col-md-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <p class="card-title mb-0">Ferramentas disponiveis</p>
+                  <div class="table-responsive">
+                    <table class="table table-striped table-borderless">
+                      <thead>
+                        <tr>
+                          <th>Data de aquisição </th>
+                          <th>Matricula</th>
+                          <th>Ferramenta</th>
+                          <th>Empresa</th>
+                          <th>Vida últil cumprida</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for dado in elementos_paginados %}
+                          <tr>
+                              <td class="font-weight-bold">{{ dado.data_aquisicao }}</td>
+                              <td class="font-weight-bold">{{ dado.matricula }}</td>
+                              <td class="font-weight-bold">{{ dado.catalogo_ferramenta.nome }}</td>
+                              <td class="font-weight-bold">{{ dado.empresa.nome }}</td>
+                            {% if dado.diferenca_dias >= 80 %}
+                              <td class="font-weight-bold text-danger" >{{ dado.diferenca_dias }}%</td>
+                            {% else %}
+                              <td class="font-weight-bold text-success" >{{ dado.diferenca_dias }}%</td>
+                            {% endif %}
+                          </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                    {% include 'partials/_paginate.html' %}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% include 'partials/_footer.html' %}
+      </div>
+    </div>
+  </div>
+  {% include 'partials/_static_js.html' %}
+</body>
+
+</html>
+

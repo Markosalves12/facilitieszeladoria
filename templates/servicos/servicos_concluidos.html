@@ -1,0 +1,92 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+
+{% include 'partials/_header.html' %}
+<body>
+  <div class="container-scroller">
+    {% include 'partials/_barra_superior.html' %}
+    <div class="container-fluid page-body-wrapper">
+      {% include 'partials/_menu_lateral.html' %}
+      <div class="main-panel">
+        <div class="content-wrapper">
+          <div class="row">
+            <div class="col-md-12 grid-margin">
+              <div class="row">
+                <div class="col-12 col-xl-8 mb-4 mb-xl-0">
+                  <h3 class="font-weight-bold">Útimos serviços concluidos por {{ nome }}</h3>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <p class="card-title mb-0">Serviços escalados</p>
+                  <div class="table-responsive">
+                    <table class="table table-striped table-borderless">
+                      <thead>
+                        <tr>
+                          <th>Serviço </th>
+                          <th>Descrição do serviço</th>
+                          <th>Data de início</th>
+                          <th>Colaboradores escalados</th>
+                          <th>Periodicidade</th>
+                          <th>Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for dado in dados %}
+                          <tr>
+                              <td class="font-weight-medium">
+                                {% for servico  in dado.servicos_escalados.all %}
+                                  {{ servico.servico }}<br>
+                                {% endfor %}
+                              </td>
+                              {% if dado.status == "Em andamento" %}
+                                <td>
+                                  <label class="font-weight-bold badge badge-success" >
+                                    <a href="{% url 'https://www.google.com.br/' %}">
+                                      {{ dado.descricao_servico }}
+                                    </a>
+                                  </label>
+                                </td>
+                              {% else %}
+                                <td>
+                                  <label class="font-weight-bold">
+                                    {{ dado.descricao_servico }}
+                                  </label>
+                                </td>
+                              {% endif %}
+                              <td class="font-weight-bold" >{{ dado.data_inicio }}</td>
+                              <td class="font-weight-medium">
+                                {% for colaborador in dado.colaboradores_escalados.all %}
+                                    {{ colaborador.nome }}<br>
+                                {% endfor %}
+                              </td>
+                              <td class="font-weight-medium" >{{ dado.periodicidade }}</td>
+                              <td>
+                                <label class="font-weight-bold badge badge-success" >
+                                    Concluido
+                                </label>
+                              </td>
+                          </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% include 'partials/_footer.html' %}
+      </div>
+    </div>
+  </div>
+  {% include 'partials/_static_js.html' %}
+</body>
+
+</html>
+
