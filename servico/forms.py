@@ -109,7 +109,7 @@ class ServicosForms(forms.ModelForm):
         labels = {
             'descricao_servico': 'Descrição do serviço',
             'data_inicio': 'Iniciar em DD/MM/AAAA',
-            'area': 'Área verde',
+            'area': 'Área',
             'foto_inicio': 'Foto da área na solicitação',
             'foto': 'Foto do serviço finalizado',
             'tipo_servico': 'Tipo de serviço'

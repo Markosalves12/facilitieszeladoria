@@ -13,7 +13,10 @@ import os
 from pathlib import Path
 from django.contrib.messages import constants as messages
 import django_heroku
+from dotenv import load_dotenv
 
+
+load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -22,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-ahs3d#99#z&261m4tn09frxmg-=s#!4m(1(5#j=z8c678fj+0$"
+SECRET_KEY = str(os.getenv('SECRET_KEY'))
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
