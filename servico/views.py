@@ -436,7 +436,11 @@ def solicitar_servico(request, login_type, id):
                   })
 
 def editar_servico_agendado(request, login_type, servico_id, id):
-    block = block_view(request, login_type=login_type, id=id)
+    block = block_view(
+        request,
+        login_type=login_type,
+        id=id
+    )
     if block == True:
         return redirect('logout')
 
@@ -454,10 +458,16 @@ def editar_servico_agendado(request, login_type, servico_id, id):
     elif login_type == "Colaborador":
         return redirect('servicos_agendados', login_type, id)
 
-    else:
+
+    elif login_type == "Gestor" or login_type == "Gerente":
         unidade = capturate_paramns(
             login_type=login_type,
             id=id
+        )
+        empresa = capturate_paramns(
+            login_type=login_type,
+            id=id,
+            type='empresa'
         )
 
         servico_agendado = Servicos.objects.get(
@@ -468,6 +478,7 @@ def editar_servico_agendado(request, login_type, servico_id, id):
             login_type=login_type,
             id_random=id,
             unidade=unidade,
+            empresa=empresa,
         )
 
     if request.method == 'POST':
