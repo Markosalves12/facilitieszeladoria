@@ -294,14 +294,14 @@ def servicos(request, login_type, id):
         Servicos.objects.filter(status__in=['Agendado', 'Em andamento'])
         .annotate(
             data_atual=TruncDate(Now()),
-            timeduration=ExpressionWrapper(
+            status_agendamento=ExpressionWrapper(
                 F('data_inicio') - F('data_atual'),
                 output_field=DurationField()
             ),
-            status_agendamento=ExpressionWrapper(
-                F('timeduration') / (3600 * 24),
-                output_field=IntegerField()
-            )
+            # status_agendamento=ExpressionWrapper(
+            #     F('timeduration') / (3600 * 24),
+            #     output_field=IntegerField()
+            # )
         )
         .filter(filter_query)
         .order_by('-data_inicio')
