@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.db.models import F, Q, ExpressionWrapper, IntegerField, DurationField
+from django.db.models import F, Q, ExpressionWrapper, IntegerField, DurationField, Func
 from django.db.models.functions import Now, TruncDate
 from servico.forms import ServicosForms, FatoServicoForm
 from servico.models import Servicos, FatoServico
@@ -291,14 +291,15 @@ def servicos(request, login_type, id):
 
 
     # Filtrar e anotar os dados de serviços
+    class DateDiff(Func):
+        function = 'AGE'
+        output_field = IntegerField()
+
     dados_servicos = (
         Servicos.objects.filter(status__in=['Agendado', 'Em andamento'])
         .annotate(
             data_atual=TruncDate(Now()),
-            status_agendamento=ExpressionWrapper(
-                int(F('data_inicio') - F('data_atual')),
-                output_field=IntegerField()
-            ) / (3600 * 24 * 1000000)
+            status_agendamento=DateDiff(F('data_inicio'), F('data_atual'))
         )
         .filter(filter_query)
         .order_by('-data_inicio')
