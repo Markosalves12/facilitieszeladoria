@@ -291,7 +291,6 @@ def servicos(request, login_type, id):
 
     class DateDiff(Func):
         function = 'DATEDIFF'
-        template = "%(function)s(%(expressions)s)"
         output_field = IntegerField()
 
     # Filtrar e anotar os dados de serviços
@@ -299,7 +298,7 @@ def servicos(request, login_type, id):
         Servicos.objects.filter(status__in=['Agendado', 'Em andamento'])
         .annotate(
             data_atual=TruncDate(Now()),
-            status_agendamento=DateDiff(F('data_inicio'), F('data_atual')) / 1000000
+            status_agendamento = DateDiff('day', F('data_atual'), F('data_inicio')) / 1000000
         )
         .filter(filter_query)
         .order_by('-data_inicio')
