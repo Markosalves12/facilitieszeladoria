@@ -296,7 +296,7 @@ def servicos(request, login_type, id):
         .annotate(
             data_atual=TruncDate(Now()),
             status_agendamento=ExpressionWrapper(
-                (F('data_inicio') - timezone.now()) / timezone.timedelta(days=1),
+                (F('data_inicio') - F('data_atual')) / timezone.timedelta(days=1),
                 output_field=IntegerField()
             )
         )
