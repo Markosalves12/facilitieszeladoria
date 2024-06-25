@@ -312,7 +312,7 @@ def servicos(request, login_type, id):
     em_andamento = dados_servicos.filter(status='Em andamento').count()
 
     # Contagem de linhas da tabela onde a data atual é maior que data_inicio
-    atrasados = dados_servicos.filter(data_inicio__lt=timezone.datetime.now().date()).count()
+    atrasados = dados_servicos.filter(data_inicio__lt=timezone.now().date()).count()
 
     # Contagem de linhas da tabela onde a diferença entre data_inicio e data_atual é menor ou igual a 21 dias
     one_day = ExpressionWrapper(F('data_atual') + timedelta(days=1), output_field=DurationField())
