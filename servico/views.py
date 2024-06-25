@@ -289,18 +289,16 @@ def servicos(request, login_type, id):
     else:
         filter_query = Q()
 
-    class DateDiff(Func):
-        function = 'DATEDIFF'
-        template = "%(function)s(%(expressions)s)"
-        output_field = IntegerField()
-
 
     # Filtrar e anotar os dados de serviços
     dados_servicos = (
         Servicos.objects.filter(status__in=['Agendado', 'Em andamento'])
         .annotate(
             data_atual=TruncDate(Now()),
-            status_agendamento=DateDiff(F('data_inicio'), F('data_atual'))
+            status_agendamento=ExpressionWrapper(
+                (F('data_inicio') - timezone.now()) / timezone.timedelta(days=1),
+                output_field=IntegerField()
+            )
         )
         .filter(filter_query)
         .order_by('-data_inicio')
