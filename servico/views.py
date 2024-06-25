@@ -291,15 +291,14 @@ def servicos(request, login_type, id):
 
 
     # Filtrar e anotar os dados de serviços
-    class DateDiff(Func):
-        function = 'AGE'
-        output_field = IntegerField()
-
     dados_servicos = (
         Servicos.objects.filter(status__in=['Agendado', 'Em andamento'])
         .annotate(
             data_atual=TruncDate(Now()),
-            status_agendamento=DateDiff(F('data_inicio'), F('data_atual'))
+            status_agendamento=ExpressionWrapper(
+                (F('data_inicio') - F('data_atual')) / timedelta(days=1),
+                output_field=IntegerField()
+            )
         )
         .filter(filter_query)
         .order_by('-data_inicio')
