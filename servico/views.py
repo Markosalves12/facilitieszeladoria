@@ -315,19 +315,26 @@ def servicos(request, login_type, id):
     atrasados = dados_servicos.filter(data_inicio__lt=timezone.datetime.now().date()).count()
 
     # Contagem de linhas da tabela onde a diferença entre data_inicio e data_atual é menor ou igual a 21 dias
+    one_day = ExpressionWrapper(F('data_atual') + timedelta(days=1), output_field=DurationField())
+    seven_days = ExpressionWrapper(F('data_atual') + timedelta(days=7), output_field=DurationField())
+
+    # Usar as expressões para filtrar os dados
     proximos = dados_servicos.filter(
-        data_inicio__gte=F('data_atual') + timedelta(days=1),
-        data_inicio__lte=F('data_atual') + timedelta(days=7)
+        data_inicio__gte=one_day,
+        data_inicio__lte=seven_days
     ).exclude(
         status="Em andamento"
     ).count()
 
 
-    elementos_paginados = paginate(request=request, data_objects=dados_servicos, per_page=10)
-    servicos_form = ServicosForms()
+    elementos_paginados = paginate(
+        request=request,
+        data_objects=dados_servicos,
+        per_page=10
+    )
 
     return render(request, 'controle/servicos/servicos/servicos.html',
-                  {'servicos_form': servicos_form,
+                  {
                    'elementos_paginados': elementos_paginados,
                    'agendamentos': agendamentos,
                    'em_andamento': em_andamento,
