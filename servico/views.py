@@ -296,7 +296,7 @@ def servicos(request, login_type, id):
         .annotate(
             data_atual=TruncDate(Now()),
             status_agendamento=ExpressionWrapper(
-                F('data_inicio') - F('data_atual'),
+                abs(F('data_inicio') - F('data_atual')),
                 output_field=IntegerField()
             ) / (3600 * 24 * 1000000)
         )

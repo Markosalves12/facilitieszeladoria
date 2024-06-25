@@ -43,7 +43,7 @@ class Servicos(models.Model):
 
     data_inicio = models.DateField(
         blank=False,
-        null=False
+        null=False,
     )
 
     colaboradores_escalados = models.ManyToManyField(
