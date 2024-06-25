@@ -227,7 +227,7 @@ def colect_dados(modelo, vida_util_campo, empresa=None):
     dados = modelo.objects.annotate(
         data_desmobilizacao_coalesce=Coalesce('data_desmobilizacao', data_atual),
         diferenca_dias=ExpressionWrapper(
-            abs(F('data_desmobilizacao_coalesce') - F('data_aquisicao')) /
+            int(F('data_desmobilizacao_coalesce') - F('data_aquisicao')) /
             (F(vida_util_campo) * 30) * 100 / (3600 * 24 * 1000000),
             output_field=IntegerField()
         )
