@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.db.models import F, Q, ExpressionWrapper, IntegerField, DurationField, Func
-from django.db.models.functions import Now, TruncDate
+from django.db.models.functions import Now, TruncDate, Cast
 from servico.forms import ServicosForms, FatoServicoForm
 from servico.models import Servicos, FatoServico
 from catalogoservico.models import CatalogoServicos
@@ -294,14 +294,15 @@ def servicos(request, login_type, id):
         Servicos.objects.filter(status__in=['Agendado', 'Em andamento'])
         .annotate(
             data_atual=TruncDate(Now()),
-            status_agendamento=ExpressionWrapper(
+            timeagendamento=ExpressionWrapper(
                 F('data_inicio') - F('data_atual'),
                 output_field=DurationField()
             ),
-            # status_agendamento=ExpressionWrapper(
-            #     F('timeduration') / (3600 * 24),
-            #     output_field=IntegerField()
-            # )
+            status_agendamento=ExpressionWrapper(
+                Cast((F('data_inicio') - F('data_atual')).days,
+                     output_field=IntegerField()),
+                output_field=IntegerField()
+            ),
         )
         .filter(filter_query)
         .order_by('-data_inicio')
