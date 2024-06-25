@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.db.models import F, Q, ExpressionWrapper, IntegerField, DurationField, Func
-from django.db.models.functions import Now, TruncDate, Cast
+from django.db.models.functions import Now, TruncDate, Cast, ExtractDay
 from servico.forms import ServicosForms, FatoServicoForm
 from servico.models import Servicos, FatoServico
 from catalogoservico.models import CatalogoServicos
@@ -299,8 +299,7 @@ def servicos(request, login_type, id):
                 output_field=DurationField()
             ),
             status_agendamento=ExpressionWrapper(
-                Cast((F('data_inicio') - F('data_atual')).days,
-                     output_field=IntegerField()),
+                ExtractDay(F('data_inicio') - F('data_atual')),
                 output_field=IntegerField()
             ),
         )
