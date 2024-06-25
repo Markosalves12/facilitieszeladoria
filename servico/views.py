@@ -298,7 +298,7 @@ def servicos(request, login_type, id):
         Servicos.objects.filter(status__in=['Agendado', 'Em andamento'])
         .annotate(
             data_atual=TruncDate(Now()),
-            status_agendamento=DateDiff(F('data_atual'), F('data_inicio')) / 1000000
+            status_agendamento=DateDiff('data_atual', F('data_atual'), F('data_inicio')) / 1000000
         )
         .filter(filter_query)
         .order_by('-data_inicio')
