@@ -298,7 +298,7 @@ def servicos(request, login_type, id):
             status_agendamento=ExpressionWrapper(
                 F('data_inicio') - timezone.now(),
                 output_field=IntegerField()
-            ) / timedelta(days=1)  # Calcula a diferença em dias
+            )/(3600 * 24 * 1000000)  # Calcula a diferença em dias
         )
         .filter(filter_query)
         .order_by('-data_inicio')
