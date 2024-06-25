@@ -296,9 +296,9 @@ def servicos(request, login_type, id):
         .annotate(
             data_atual=TruncDate(Now()),
             status_agendamento=ExpressionWrapper(
-                (F('data_inicio') - TruncDate(Now())).days,  # Converte timedelta para dias
+                F('data_inicio') - F('data_atual'),
                 output_field=IntegerField()
-            )
+            ) / (3600 * 24 * 1000000)
         )
         .filter(filter_query)
         .order_by('-data_inicio')
