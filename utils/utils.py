@@ -5,8 +5,8 @@ from gerente.models import Gerente
 from django.contrib import messages
 from colaborador.models import Colaborador
 from django.shortcuts import get_object_or_404
-from django.db.models.functions import Coalesce, ExtractDay
-from django.db.models import ExpressionWrapper, F, IntegerField, DurationField, FloatField
+from django.db.models.functions import Coalesce, ExtractDay, Cast, Round
+from django.db.models import ExpressionWrapper, F, FloatField
 from django.utils import timezone
 from django.core.files.base import ContentFile
 import random
@@ -237,13 +237,16 @@ def colect_dados(modelo, vida_util_campo, empresa=None):
 
     dados = modelo.objects.annotate(
         data_desmobilizacao_coalesce=Coalesce('data_desmobilizacao', data_atual),
-        tempooperacaco=ExpressionWrapper(
-            F('data_desmobilizacao_coalesce') - F('data_aquisicao'),
-            output_field=DurationField()
-        ),
+        # tempooperacaco=ExpressionWrapper(
+        #     F('data_desmobilizacao_coalesce') - F('data_aquisicao'),
+        #     output_field=DurationField()
+        # ),
         diferenca_dias=ExpressionWrapper(
-            (ExtractDay(F('data_desmobilizacao_coalesce') - F('data_aquisicao')) / (
-                        F('catalogo_equipamento__vida_util_meses') * 30.44)) * 100,
+            Round(
+                (Cast(ExtractDay(F('data_desmobilizacao_coalesce') - F('data_aquisicao')), FloatField()) /
+                 (F('catalogo_equipamento__vida_util_meses') * 30.44)) * 100,
+                2  # Arredonda para duas casas decimais
+            ),
             output_field=FloatField()
         ),
     ).filter(
