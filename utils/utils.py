@@ -242,7 +242,7 @@ def colect_dados(modelo, vida_util_campo, empresa=None):
             output_field=DurationField()
         ),
         diferenca_dias=ExpressionWrapper(
-            (ExtractDay(F('data_aquisicao') - F('data_desmobilizacao_coalesce')) / (
+            (ExtractDay(F('data_desmobilizacao_coalesce') - F('data_aquisicao')) / (
                         F('catalogo_equipamento__vida_util_meses') * 30.44)) * 100,
             output_field=FloatField()
         ),
