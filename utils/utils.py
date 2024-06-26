@@ -5,8 +5,8 @@ from gerente.models import Gerente
 from django.contrib import messages
 from colaborador.models import Colaborador
 from django.shortcuts import get_object_or_404
-from django.db.models.functions import Coalesce
-from django.db.models import ExpressionWrapper, F, IntegerField
+from django.db.models.functions import Coalesce, ExtractDay
+from django.db.models import ExpressionWrapper, F, IntegerField, DurationField, FloatField
 from django.utils import timezone
 from django.core.files.base import ContentFile
 import random
@@ -219,6 +219,17 @@ def formatar_atributos(queryset, atributo):
 # outro_texto_formatado = formatar_atributos(outro_queryset, 'outro_campo')
 
 
+# .annotate(
+#     data_atual=TruncDate(Now()),
+#     timeagendamento=ExpressionWrapper(
+#         F('data_inicio') - F('data_atual'),
+#         output_field=DurationField()
+#     ),
+#     status_agendamento=ExpressionWrapper(
+#         ExtractDay(F('data_inicio') - F('data_atual')),
+#         output_field=IntegerField()
+#     ),
+# )
 
 def colect_dados(modelo, vida_util_campo, empresa=None):
     data_atual = timezone.datetime.now().date()
@@ -226,11 +237,15 @@ def colect_dados(modelo, vida_util_campo, empresa=None):
 
     dados = modelo.objects.annotate(
         data_desmobilizacao_coalesce=Coalesce('data_desmobilizacao', data_atual),
+        tempooperacaco=ExpressionWrapper(
+            F('data_desmobilizacao_coalesce') - F('data_aquisicao'),
+            output_field=DurationField()
+        ),
         diferenca_dias=ExpressionWrapper(
-            int(F('data_desmobilizacao_coalesce') - F('data_aquisicao')) /
-            (F(vida_util_campo) * 30) * 100 / (3600 * 24 * 1000000),
-            output_field=IntegerField()
-        )
+            (ExtractDay(F('data_aquisicao') - F('data_desmobilizacao_coalesce')) / (
+                        F('vida_util_campo') * 30.44)) * 100,
+            output_field=FloatField()
+        ),
     ).filter(
         **filtro_empresa,
     )
