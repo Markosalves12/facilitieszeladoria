@@ -4,7 +4,7 @@ from colaborador.models import Colaborador
 from gestor.models import Gestor
 from django.contrib.auth.hashers import check_password
 from gerente.models import Gerente
-from colaborador.forms import ColaboradorForms, LoginForms, UpdateLoginForms
+from colaborador.forms import ColaboradorForms, LoginForms, UpdateLoginForms, InsertCodeForms
 from utils.utils import paginate
 from utils.utils import block_view
 from django.utils.crypto import get_random_string
@@ -12,7 +12,7 @@ from django.contrib import messages
 from colaborador.utils import DadosColaboradoresAndFormulario
 from utils.utils import alterar_status, gerar_codigo_aleatorio
 from django.contrib.auth.models import User
-from send_password.send_password import SendCodeUpdatePassword
+from send_password.send_notificafions import SendCodeUpdatePassword
 
 # Create your views here.
 
@@ -188,14 +188,14 @@ def resgister(request):
             senha1 = formupdate.cleaned_data['Senha']
             senha2 = formupdate.cleaned_data['Confirmacao_da_senha']
 
-            request.session['update_password_code'] = None
-
             # verificando se as senhas são iguais
             if senha1 != senha2:
                 messages.error(request, "As senha devem ser iguais")
                 return redirect('resgister')
 
             request.session['update_password_code'] = gerar_codigo_aleatorio()
+            request.session['new_password'] = senha1
+            request.session['email_update'] = email
 
             # SendCodeUpdatePassword(
             #     code=request.session['update_password_code'],
@@ -209,10 +209,19 @@ def resgister(request):
                 administrador = User.objects.get(
                     email=email
                 )
+                request.session['login_type'] = 'Administrador'
 
-                administrador.password = senha1
-                messages.success(request, "Senha atualizada com seucesso")
-                return redirect('login')
+                SendCodeUpdatePassword(
+                    code=request.session.get('update_password_code', ''),
+                    para=formupdate.cleaned_data['email'],
+                    colaborador_nome=administrador.username,
+                ).send_email()
+
+                return redirect('insert_code')
+
+                # administrador.password = senha1
+                # messages.success(request, "Senha atualizada com seucesso")
+                # return redirect('login')
 
             except:
                 pass
@@ -225,14 +234,22 @@ def resgister(request):
 
                 # o usuario precisa estar mobilizado no time
                 if gestor.status == "Mobilizado":
-                    pass
+                    request.session['login_type'] = 'Gestor'
+
+                    SendCodeUpdatePassword(
+                        code=request.session.get('update_password_code', ''),
+                        para=formupdate.cleaned_data['email'],
+                        colaborador_nome=gestor.nome,
+                    ).send_email()
+
+                    return redirect('insert_code')
                 else:
                     return redirect('login')
 
-                gestor.senha = senha1
-                gestor.save()
-                messages.success(request, "Senha atualizada com seucesso")
-                return redirect('login')
+                # gestor.senha = senha1
+                # gestor.save()
+                # messages.success(request, "Senha atualizada com seucesso")
+                # return redirect('login')
 
             except:
                 pass
@@ -244,14 +261,23 @@ def resgister(request):
                 )
                 # o usuario precisa estar mobilizado no time
                 if gerente.status == "Mobilizado":
-                    pass
+                    request.session['login_type'] = 'Gerente'
+
+                    SendCodeUpdatePassword(
+                        code=request.session.get('update_password_code', ''),
+                        para=formupdate.cleaned_data['email'],
+                        colaborador_nome=gerente.nome,
+                    ).send_email()
+
+                    return redirect('insert_code')
+
                 else:
                     return redirect('login')
 
-                gerente.senha = senha1
-                gerente.save()
-                messages.success(request, "Senha atualizada com seucesso")
-                return redirect('login')
+                # gerente.senha = senha1
+                # gerente.save()
+                # messages.success(request, "Senha atualizada com seucesso")
+                # return redirect('login')
 
             except:
                 pass
@@ -266,11 +292,51 @@ def resgister(request):
                   {'form': form})
 
 
+def insert_code(request):
+    login_form = InsertCodeForms()
+    if request.method == "POST":
+        form = InsertCodeForms(request.POST)
+        if form.is_valid():
+            codigo = form.cleaned_data['codigo']
+            if codigo == request.session.get('update_password_code', ''):
+                if request.session.get('login_type', '') == "Administrador":
+                    administrador = User.objects.get(
+                        email=request.session.get('email_update', '')
+                    )
+                    administrador.password = request.session.get('new_password', '')
 
-# def login_administrador(request):
-#     return render(request, 'administrador/index.html')
+                elif request.session.get('login_type', '') == "Gestor":
+                    gestor = Gestor.objects.get(
+                        email=request.session.get('email_update', '')
+                    )
+                    gestor.senha = request.session.get('new_password', '')
 
-#########################################################
+
+                elif request.session.get('login_type', '') == "Gerente":
+                    gerente = Gerente.objects.get(
+                        email=request.session.get('email_update', '')
+                    )
+                    gerente.senha = request.session.get('new_password', '')
+
+                messages.success(
+                    request=request,
+                    message="senha atualizada com sucesso"
+                )
+
+                return redirect('login')
+
+            messages.error(
+                request=request,
+                message="algo deu errado"
+            )
+
+    return render(
+        request=request,
+        template_name='accounts/insert_code.html',
+        context={
+            'login_form': login_form
+        }
+    )
 
 
 # View que controla o painel do administrador nos 3 niveis

@@ -77,7 +77,18 @@ class UpdateLoginForms(forms.Form):
     )
     # Nota depois de editar a pagina de login os estilos foram buscados da cadastro
 
-
+class InsertCodeForms(forms.Form):
+    codigo = forms.CharField(
+        label="Código de troca",
+        required=True,
+        max_length=100,
+        widget=forms.TextInput(
+            attrs={
+                "class": "form-control",
+                "placeholder": "Thry679**%"
+            }
+        )
+    )
 
 # class AdministradorForms(forms.ModelForm):
 #     class Meta:

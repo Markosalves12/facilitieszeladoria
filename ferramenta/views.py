@@ -29,7 +29,7 @@ def disponibilidade_ferramentas(request):
     if request.session['login_type'] == 'Administrador':
         dados_ferramentas = colect_dados(
                 FerramentaDisponivel,
-                vida_util_campo= 'catalogo_ferramenta__vida_util_meses',
+                vida_util_campo='catalogo_ferramenta__vida_util_meses',
         ).filter(
             Q(data_desmobilizacao__isnull=True) |
             Q(data_desmobilizacao=None),
@@ -39,7 +39,7 @@ def disponibilidade_ferramentas(request):
         empresa = capturate_paramns(login_type=login_type, id=id, type='empresa')
         dados_ferramentas = colect_dados(
                 FerramentaDisponivel,
-                vida_util_campo= 'catalogo_ferramenta__vida_util_meses',
+                vida_util_campo='catalogo_ferramenta__vida_util_meses',
                 empresa=empresa
         ).filter(
             Q(data_desmobilizacao__isnull=True) |
@@ -51,7 +51,7 @@ def disponibilidade_ferramentas(request):
         empresa = capturate_paramns(login_type=login_type, id=id, type='empresa')
         dados_ferramentas = colect_dados(
                 FerramentaDisponivel,
-                vida_util_campo= 'catalogo_ferramenta__vida_util_meses',
+                vida_util_campo='catalogo_ferramenta__vida_util_meses',
                 empresa=empresa
         ).filter(
             Q(data_desmobilizacao__isnull=True) |
@@ -63,7 +63,7 @@ def disponibilidade_ferramentas(request):
         empresa = capturate_paramns(login_type=login_type, id=id, type='empresa')
         dados_ferramentas = colect_dados(
                 FerramentaDisponivel,
-                vida_util_campo= 'catalogo_ferramenta__vida_util_meses',
+                vida_util_campo='catalogo_ferramenta__vida_util_meses',
                 empresa=empresa
         ).filter(
             Q(data_desmobilizacao__isnull=True) |

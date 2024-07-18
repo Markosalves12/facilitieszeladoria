@@ -8,7 +8,7 @@ from colaborador.views import (login,
                                # editar_administrador, desmobilizar_administrador, administradores_desmobilizados,
                                # reabilitar_administrador,
                                desmobilizar_colaborador, colaboradores_desmobilizados,
-                               reabilitar_colaborador, logout)
+                               reabilitar_colaborador, logout, insert_code)
 
 
 urlpatterns = [
@@ -20,6 +20,8 @@ urlpatterns = [
 
     path('alterar-senha/', resgister, name='resgister'),
     # path('login-administrador', login_administrador, name='login_administrador'),
+
+    path('confirm-update-password/', insert_code, name='insert_code'),
 
     ##################################
 

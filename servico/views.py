@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
-from django.db.models import F, Q, ExpressionWrapper, IntegerField, DurationField, Func
-from django.db.models.functions import Now, TruncDate, Cast, ExtractDay
+from django.db.models import F, Q, ExpressionWrapper, IntegerField, DurationField
+from django.db.models.functions import Now, TruncDate, ExtractDay
 from servico.forms import ServicosForms, FatoServicoForm
 from servico.models import Servicos, FatoServico
 from catalogoservico.models import CatalogoServicos
@@ -12,8 +12,10 @@ from datetime import timedelta
 from django.utils import timezone
 from django.contrib import messages
 from utils.utils import block_view, alterar_status, capturate_paramns, formatar_atributos
-from send_password.send_password import (SendNotificationNewServiceToColaborador,
-                                         SendNotificationServiceCanceled)
+# from send_password.send_password import (SendNotificationNewServiceToColaborador,
+#                                          SendNotificationServiceCanceled)
+
+from send_password.send_notificafions import SendNotificationNewServiceToColaborador, SendNotificationServiceCanceled
 
 # Create your views here.
 
@@ -186,6 +188,7 @@ def catalogo_de_servicos(request, login_type, id):
         'empresa': empresa
     })
 
+
 def editar_catalogo_de_servicos(request, login_type, servico_catalogo_id, id):
     block = block_view(
         request,
@@ -215,6 +218,7 @@ def editar_catalogo_de_servicos(request, login_type, servico_catalogo_id, id):
                    'servico_catalogo_id': servico_catalogo_id,
                    'servico_catalogo': servico_catalogo})
 
+
 def desmobilizar_servico_do_catalogo(request, login_type, servico_catalogo_id, id, desm):
     block = block_view(
         request,
@@ -228,6 +232,7 @@ def desmobilizar_servico_do_catalogo(request, login_type, servico_catalogo_id, i
     alterar_status(request=request, model=CatalogoServicos, object_id=servico_catalogo_id, desm=desm)
 
     return redirect('catalogo_de_servicos', login_type, id)
+
 
 def catalogo_de_servicos_desmobilizados(request, login_type, id):
     block = block_view(
@@ -249,6 +254,7 @@ def catalogo_de_servicos_desmobilizados(request, login_type, id):
         'dados_catalogo_servicos': dados_catalogo_servicos,
         'unidade': unidade
     })
+
 
 def reabilitar_servico_do_catalogo(request, login_type, servico_catalogo_id, id):
     block = block_view(

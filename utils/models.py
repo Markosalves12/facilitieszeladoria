@@ -1,7 +1,9 @@
 from django.contrib.auth.models import BaseUserManager
 from django.utils.crypto import get_random_string
 import random
-from send_password.send_password import SendEmail
+# from send_password.send_password import SendEmail
+
+from send_password.send_notificafions import SendEmail
 
 
 
@@ -38,11 +40,12 @@ class GerenteManager(BaseUserManager):
         else:
             random_password = get_random_string(length=12)
 
-            SendEmail(para=self.email,
-                      nome=self.nome,
-                      cargo='gerente',
-                      senha=random_password
-                      ).send_email()
+            SendEmail(
+                para=self.email,
+                nome=self.nome,
+                cargo='gerente',
+                senha=random_password,
+            ).send_email()
 
             user.set_password(random_password)
 
@@ -92,13 +95,12 @@ class GestorManager(BaseUserManager):
         else:
             random_password = get_random_string(length=12)
 
-            SendEmail(para=self.email,
-                      nome=self.nome,
-                      cargo='gerente',
-                      senha=random_password
-                      ).send_email()
-
-            user.set_password(random_password)
+            SendEmail(
+                para=self.email,
+                nome=self.nome,
+                cargo='gestor',
+                senha=random_password,
+            ).send_email()
 
         user.save(using=self._db)
         return user

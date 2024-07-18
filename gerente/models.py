@@ -2,7 +2,10 @@ from django.db import models
 from gestor.models import Gestor
 from django.contrib.auth.hashers import make_password, check_password
 from django.utils.crypto import get_random_string
-from send_password.send_password import SendEmail
+# from send_password.send_password import SendEmail
+
+from send_password.send_notificafions import SendEmail
+
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, Group, Permission
 from utils.models import GerenteManager
 import random
@@ -112,11 +115,14 @@ class Gerente(AbstractBaseUser, PermissionsMixin):
             random_password = get_random_string(
                 length=12
             )
-            SendEmail(para=self.email,
-                      nome=self.nome,
-                      cargo='gerente',
-                      senha=random_password
-                      ).send_email()
+
+            SendEmail(
+                para=self.email,
+                nome=self.nome,
+                cargo='gerente',
+                senha=random_password,
+            ).send_email()
+
             self.senha = make_password(random_password)
 
         else:

@@ -25,6 +25,10 @@ def classicate_login(request):
     emailgestor = request.session.get('emailgestor', '')
     emailuser = request.session.get('emailuser', '')
 
+    update_password_code = request.session.get('update_password_code', '')
+    new_password = request.session.get('new_password', '')
+    email_update = request.session.get('email_update', '')
+
     # envio das variáveis
     return {'type': type,
             'nome': nome,

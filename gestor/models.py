@@ -2,7 +2,8 @@ from django.db import models
 from django.contrib.auth.hashers import make_password
 from django.utils.crypto import get_random_string
 from django.contrib.auth.hashers import check_password
-from send_password.send_password import SendEmail
+# from send_password.send_password import SendEmail
+from send_password.send_notificafions import SendEmail
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, Group, Permission
 from empresa.models import Empresa
 from utils.models import GestorManager
@@ -147,11 +148,13 @@ class Gestor(AbstractBaseUser, PermissionsMixin):
             random_password = get_random_string(
                 length=12
             )
-            SendEmail(para=self.email,
-                      nome=self.nome,
-                      cargo='gestor',
-                      senha=random_password
-                      ).send_email()
+            SendEmail(
+                para=self.email,
+                nome=self.nome,
+                cargo='gestor',
+                senha=random_password,
+            ).send_email()
+
             self.senha = make_password(random_password)
 
         else:
