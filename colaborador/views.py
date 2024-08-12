@@ -24,6 +24,7 @@ def login(request):
     if request.method == 'POST':
         form = LoginForms(request.POST)
         if form.is_valid():
+
             email = form['email'].value()
             senha = form['senha'].value()
 

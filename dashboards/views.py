@@ -1416,11 +1416,19 @@ def exportar_relatorio_de_planejamento(request, login_type, id, datastart, dataf
         return y, page_number
 
     def add_figures_to_pdf(c, fig_dict, start_y, start_page):
+        width, height = letter
         y = start_y
         page_number = start_page
 
+        # Define o caminho do diretório onde as imagens serão salvas usando BASE_DIR
+        image_dir = os.path.join(settings.BASE_DIR, 'media', 'images')
+
+        # Cria o diretório se ele não existir
+        if not os.path.exists(image_dir):
+            os.makedirs(image_dir)
+
         for fig_name, fig_html in fig_dict.items():
-            fig_file_path = os.path.join(settings.MEDIA_ROOT, f'static/images/{fig_name}.png')
+            fig_file_path = os.path.join(image_dir, f'{fig_name}.png')
             save_plotly_fig_as_image(fig_html, fig_file_path)
 
             if os.path.exists(fig_file_path):
@@ -1433,7 +1441,7 @@ def exportar_relatorio_de_planejamento(request, login_type, id, datastart, dataf
                     draw_header(c)
                     y = height - 150
 
-                n = 1.8
+                n = 2
                 c.drawImage(fig_image, (width - fig_img_width / n) / 2, y - fig_img_height / n,
                             width=fig_img_width / n, height=fig_img_height / n, mask='auto')
                 y -= fig_img_height / n + 20
@@ -1450,13 +1458,16 @@ def exportar_relatorio_de_planejamento(request, login_type, id, datastart, dataf
         'fig_localidade': generate_chart(dados_servicos.filter(data_inicio__gte=seven_days), 'Agendado',
                                          'area__unidade_jardim__nome', 'Área Total por localidade (Agendado)',
                                          'localidade', '#90ee90'),
-        'fig_terreno_andamento': generate_chart(dados_servicos.filter(status='Em andamento'), 'Em andamento',
-                                                'area__terreno', 'Área Total por Tipo de Terreno (Em andamento)',
-                                                'terreno', '#badbff'),
-        'fig_vegetacao_em_andamento': generate_chart(dados_servicos.filter(status='Em andamento'), 'Em andamento',
-                                                     'area__vegetacao',
-                                                     'Área Total por Tipo de Vegetação (Em andamento)', 'vegetação',
-                                                     '#90ee90')
+    }
+
+    fig_charts_endamento = {
+    'fig_terreno_andamento': generate_chart(dados_servicos.filter(status='Em andamento'), 'Em andamento',
+                                            'area__terreno', 'Área Total por Tipo de Terreno (Em andamento)',
+                                            'terreno', '#badbff'),
+    'fig_vegetacao_em_andamento': generate_chart(dados_servicos.filter(status='Em andamento'), 'Em andamento',
+                                                 'area__vegetacao',
+                                                 'Área Total por Tipo de Vegetação (Em andamento)', 'vegetação',
+                                                 '#90ee90')
     }
 
     fig_grouped_charts = {
@@ -1503,8 +1514,43 @@ def exportar_relatorio_de_planejamento(request, login_type, id, datastart, dataf
         data_inicio__lte=seven_days
     ), start_y, end_page + 1)
 
-    end_y, end_page = add_figures_to_pdf(p, fig_charts, end_y, end_page + 1)
-    end_y, end_page = add_figures_to_pdf(p, fig_grouped_charts, end_y, end_page + 1)
+    # Adiciona uma nova página antes de iniciar o segundo laço for
+    p.showPage()
+    draw_header(p)
+    start_y = height - 150  # Posição inicial para o conteúdo após o cabeçalho
+
+    p.setFont('Helvetica-Bold', 12)
+    p.drawString(x_start, start_y, f"Volume de servicos agendados")
+    start_y -= 20
+
+    start_y, end_page = add_figures_to_pdf(p, fig_charts, start_y, end_page + 1)
+
+    # Adiciona uma nova página antes de iniciar o segundo laço for
+    p.showPage()
+    draw_header(p)
+    start_y = height - 150  # Posição inicial para o conteúdo após o cabeçalho
+
+    p.setFont('Helvetica-Bold', 12)
+    p.drawString(x_start, start_y, f"Volume de servicos em andamento")
+    start_y -= 20
+
+    start_y, end_page = add_figures_to_pdf(p, fig_charts_endamento, start_y, end_page + 1)
+
+    # Adiciona uma nova página antes de iniciar o segundo laço for
+    p.showPage()
+    draw_header(p)
+    start_y = height - 150  # Posição inicial para o conteúdo após o cabeçalho
+
+    p.setFont('Helvetica-Bold', 12)
+    p.drawString(x_start, start_y, f"Volume de servicos agendados por mês")
+    start_y -= 20
+
+    start_y, end_page = add_figures_to_pdf(p, fig_grouped_charts, start_y, end_page + 1)
+
+    # Adiciona uma nova página antes de iniciar o segundo laço for
+    p.showPage()
+    draw_header(p)
+    start_y = height - 150  # Posição inicial para o conteúdo após o cabeçalho
 
     # Desenha o rodapé na última página
     draw_footer(p, end_page, is_last_page=True)
