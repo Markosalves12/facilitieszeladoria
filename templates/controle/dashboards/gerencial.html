@@ -47,7 +47,7 @@
                   <div class="card card-tale">
                     <div class="card-body">
                       <p class="mb-4">Servicos agendados </p>
-                      <p class="fs-30 mb-2"> {{ agendamentos }} -- {{ total_de_areas_agendadas }} </p>
+                      <p class="fs-30 mb-2"> {{ agendamentos }} -- {{ total_de_areas_agendadas|floatformat:2 }} </p>
                       <p></p>
                     </div>
                   </div>
@@ -56,7 +56,7 @@
                   <div class="card card-tale">
                     <div class="card-body">
                       <p class="mb-4">Servicos em andamento </p>
-                      <p class="fs-30 mb-2"> {{ em_andamento }} -- {{ total_de_areas_em_andamento }}</p>
+                      <p class="fs-30 mb-2"> {{ em_andamento }} -- {{ total_de_areas_em_andamento|floatformat:2 }}</p>
                       <p></p>
                     </div>
                   </div>
@@ -65,7 +65,7 @@
                   <div class="card card-light-danger">
                     <div class="card-body">
                       <p class="mb-4">Servicos atrasados</p>
-                      <p class="fs-30 mb-2"> {{ atrasados }} -- {{ total_de_areas_atrasadas }} </p>
+                      <p class="fs-30 mb-2"> {{ atrasados }} -- {{ total_de_areas_atrasadas|floatformat:2 }} </p>
                     </div>
                   </div>
                 </div>
@@ -73,7 +73,7 @@
                   <div class="card card-tale">
                     <div class="card-body">
                       <p class="mb-4">Serviços próximo</p>
-                      <p class="fs-30 mb-2">{{ proximos }} -- {{ total_de_areas_proximas }}</p>
+                      <p class="fs-30 mb-2">{{ proximos }} -- {{ total_de_areas_proximas|floatformat:2 }}</p>
                     </div>
                   </div>
                 </div>
