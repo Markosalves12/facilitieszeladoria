@@ -42,7 +42,7 @@
             <div class="col-md-12 grid-margin stretch-card">
               <div class="card">
                 <div class="card-body">
-                  <h4 class="card-title">Empresas {{ unidade }}</h4>
+<!--                  <h4 class="card-title">Empresas {{ unidade }}</h4>-->
                   <div class="table-responsive">
                     <table class="table table-striped table-borderless">
                       <thead>
@@ -63,25 +63,25 @@
                         {% for dado in elementos_paginados %}
                           <tr>
                             <td class="font-weight-medium" >{{ dado.id }}</td>
-                            <td class="font-weight-medium" id="gestor-funcoes-{{ forloop.counter }}">{{ dado.servico.descricao_servico }}</td>
+                            <td class="font-weight-medium" id="gestor-funcoes-{{ forloop.counter }}">{{ dado.descricao_servico }}</td>
                             <td class="font-weight-medium">
-                                {% for colaborador in dado.servico.colaboradores_escalados.all %}
+                                {% for colaborador in dado.colaboradores_escalados.all %}
                                     {{ colaborador.nome }}<br>
                                 {% endfor %}
                             </td>
                             <td class="font-weight-medium">
-                              {% for servico  in dado.servico.servicos_escalados.all %}
+                              {% for servico  in dado.servicos_escalados.all %}
                                 <div id="servico-{{ forloop.counter }}">
-                                  {{ servico.servico }}<br>
+                                  {{ servico }}<br>
                                 </div>
                               {% endfor %}
                             </td>
-                            <td class="font-weight-medium" >{{ dado.servico.data_inicio }}</td>
-                            <td class="font-weight-medium" >{{ dado.servico.status }}</td>
-                            <td class="font-weight-medium" > {{ dado.servico.area.nome }} </td>
-                            <td class="font-weight-medium" > {{ dado.servico.area.area }} M² </td>
-                            <td class="font-weight-medium" > {{ dado.servico.area.unidade_jardim.nome }} </td>
-                            <td class="font-weight-medium" > {{ dado.servico.area.unidade_jardim.unidadeoriginial }} </td>
+                            <td class="font-weight-medium" >{{ dado.data_inicio }}</td>
+                            <td class="font-weight-medium" >{{ dado.status }}</td>
+                            <td class="font-weight-medium" > {{ dado.area.nome }} </td>
+                            <td class="font-weight-medium" > {{ dado.area.area }} M² </td>
+                            <td class="font-weight-medium" > {{ dado.area.unidade_jardim.nome }} </td>
+                            <td class="font-weight-medium" > {{ dado.area.unidade_jardim.unidadeoriginial }} </td>
                           </tr>
                         {% endfor %}
                       </tbody>

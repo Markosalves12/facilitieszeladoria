@@ -1804,7 +1804,7 @@ def exportar_excel_planejado(request, login_type, id, datastart, datafim, empres
         content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     )
     # cria um anexo que ´instalado no lado cliente
-    response['Content-Disposition'] = 'attachment; filename="relatorio de servicos.xlsx"'
+    response['Content-Disposition'] = 'attachment; filename="relatorio de servicos planejados.xlsx"'
 
     # Salve o arquivo Excel
     wb.save(response)
