@@ -131,7 +131,6 @@ def iniciar_servico(request, servico_id, login_type, id):
     if request.method == 'POST':
         form = FatoServicoForm(request.POST)
         if form.is_valid():
-            print(form.cleaned_data['servico'].id)
             servico = Servicos.objects.get(id=form.cleaned_data['servico'].id)
             servico.status = "Em andamento"
             servico.save()
@@ -314,27 +313,37 @@ def servicos(request, login_type, id):
         .distinct()
     )
 
-    # Contagem total de linhas da tabela
-    agendamentos = dados_servicos.filter(status='Agendado').count()
-
-    # Contagem de linhas da tabela com status "Em andamento"
-    em_andamento = dados_servicos.filter(status='Em andamento').count()
-
-    # Contagem de linhas da tabela onde a data atual é maior que data_inicio
-    atrasados = dados_servicos.filter(data_inicio__lt=timezone.now().date()).count()
-
-    # Contagem de linhas da tabela onde a diferença entre data_inicio e data_atual é menor ou igual a 21 dias
     one_day = ExpressionWrapper(F('data_atual') + timedelta(days=1), output_field=DurationField())
     seven_days = ExpressionWrapper(F('data_atual') + timedelta(days=7), output_field=DurationField())
+
+    # Contagem total de linhas da tabela
+    agendamentos = dados_servicos.filter(
+        status='Agendado',
+        data_inicio__gte=seven_days,
+    ).count()
+
+    # Contagem de linhas da tabela com status "Em andamento"
+    em_andamento = dados_servicos.filter(
+        status='Em andamento'
+    ).count()
+
+    # Contagem de linhas da tabela onde a data atual é maior que data_inicio
+    atrasados = dados_servicos.filter(
+        data_inicio__lt=timezone.now().date()
+    ).exclude(status="Em andamento").count()
+
+    # Contagem de linhas da tabela onde a diferença entre data_inicio e data_atual é menor ou igual a 21 dias
+    # one_day = ExpressionWrapper(F('data_atual') + timedelta(days=1), output_field=DurationField())
+    # seven_days = ExpressionWrapper(F('data_atual') + timedelta(days=7), output_field=DurationField())
 
     # Usar as expressões para filtrar os dados
     proximos = dados_servicos.filter(
         data_inicio__gte=one_day,
         data_inicio__lte=seven_days
     ).exclude(
-        status="Em andamento"
+        status="Em andamento",
+        data_inicio__lte=seven_days
     ).count()
-
 
     elementos_paginados = paginate(
         request=request,

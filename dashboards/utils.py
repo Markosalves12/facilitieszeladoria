@@ -313,3 +313,80 @@ def colect_dados_manutencao_ferramentas():
     )
 
     return dados
+
+def colect_dados_planejamento():
+    # Adicione os dados do relatório ao arquivo Excel
+    dados = FatoServico.objects.annotate(
+        tipodeempresa=ExpressionWrapper(
+            F('servico__colaboradores_escalados__gerente__gestor__empresa__tipo_empresa'),
+            output_field=CharField()
+        ),
+        empresaprestadora=ExpressionWrapper(
+            F('servico__colaboradores_escalados__gerente__gestor__empresa__nome'),
+            output_field=CharField()
+        ),
+        id_agendamento = ExpressionWrapper(
+            F('servico__id'),
+            output_field=CharField()
+        ),
+        tipo_agendamento=ExpressionWrapper(
+            F('servico__tipo_servico'),
+            output_field=CharField()
+        ),
+        descricao_do_servico=ExpressionWrapper(
+            F('servico__descricao_servico'),
+            output_field=CharField()
+        ),
+        colaboradores_chamados = ExpressionWrapper(
+            F('servico__colaboradores_escalados__nome'),
+            output_field=CharField()
+        ),
+        servicos_solicitados=ExpressionWrapper(
+            F('servico__servicos_escalados__servico'),
+            output_field=CharField()
+        ),
+        data_de_inicio = ExpressionWrapper(
+            F('servico__data_inicio'),
+            output_field=CharField()
+        ),
+        status_servico = ExpressionWrapper(
+            F('servico__status'),
+            output_field=CharField()
+        ),
+        area_atendida = ExpressionWrapper(
+            F('servico__area__nome'),
+            output_field=CharField()
+        ),
+        periodicidade_de_retorno=ExpressionWrapper(
+            F('servico__area__periodicidade'),
+            output_field=CharField()
+        ),
+        area_total = ExpressionWrapper(
+            F('servico__area__area'),
+            output_field=CharField()
+        ),
+        tipo_vegetacao = ExpressionWrapper(
+            F('servico__area__vegetacao'),
+            output_field=CharField()
+        ),
+        tipo_terreno=ExpressionWrapper(
+            F('servico__area__terreno'),
+            output_field=CharField()
+        ),
+        localidade=ExpressionWrapper(
+            F('servico__area__unidade_jardim__nome'),
+            output_field=CharField()
+        ),
+        tiponegocio=ExpressionWrapper(
+            F('servico__area__unidade_jardim__negocio'),
+            output_field=CharField()
+        ),
+        unidade=ExpressionWrapper(
+            F('servico__area__unidade_jardim__unidadeoriginial__unidade'),
+            output_field=CharField()
+        ),
+    ).filter(
+        status_servico__in=["Agendado", "Em andamento"]
+    )
+
+    return dados

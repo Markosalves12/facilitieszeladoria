@@ -5,7 +5,8 @@ from dashboards.views import (relatoriodeservicos, exportar_excel,
                               exportar_relatorio_manutencao_equipamentos,
                               relatoriomanutencaoferramentas,
                               exportar_relatorio_manutencao_ferramentas,
-                              dashboard_gerencial, exportar_relatorio_de_planejamento)
+                              dashboard_gerencial, exportar_relatorio_de_planejamento,
+                              exportar_excel_planejado, relatoriodeservicosplanejados)
 
 
 urlpatterns = [
@@ -38,4 +39,11 @@ urlpatterns = [
              '<str:datafim>/',
              exportar_relatorio_de_planejamento,
              name='exportar_relatorio_de_planejamento'),
+
+
+    path('relatorio-de-servicos-planejados/', relatoriodeservicosplanejados,
+         name='relatoriodeservicosplanejados'),
+    path('exportar-excel-servicos-planejados/<str:login_type>/<int:id>/<str:datastart>/'
+         '<str:datafim>/<str:empresa>/<str:unidade>/<str:localidades>/<str:negocios>',
+         exportar_excel_planejado, name='exportar_excel_planejado'),
 ]

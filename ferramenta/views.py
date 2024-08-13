@@ -469,7 +469,7 @@ def editar_manutencao_ferramenta(request, login_type, manutencao_ferramenta_id, 
             request.POST,
             instance=manutencao,
         )
-        print(form)
+
         if form.is_valid():
             form.save()
 

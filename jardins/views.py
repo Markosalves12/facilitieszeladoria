@@ -60,12 +60,9 @@ def areas(request, login_type, id):
         'unidade': unidade})
 
 def editar_area(request, login_type, area_id, id):
-    print("Editar area")
     block = block_view(request, login_type=login_type, id=id)
     if block == True:
         return redirect('logout')
-
-    print("A view nao foi bloqueada")
 
     area = Jardins.objects.get(
         id_random=area_id

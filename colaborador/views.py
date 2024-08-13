@@ -40,9 +40,7 @@ def login(request):
                 usuario = User.objects.get(
                     email=email
                 )
-                print(usuario.username)
 
-                print(usuario.username)
                 usuario = auth.authenticate(
                     request,
                     username=usuario,

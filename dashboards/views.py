@@ -4,7 +4,7 @@ import openpyxl
 from django.http import HttpResponse
 from dashboards.forms import FiltroTableForms, FiltroTableManutencaoForms
 from utils.utils import block_view
-from dashboards.utils import colect_dados, colect_dados_manutencao_equipamentos, colect_dados_manutencao_ferramentas
+from dashboards.utils import colect_dados, colect_dados_manutencao_equipamentos, colect_dados_manutencao_ferramentas, colect_dados_planejamento
 from servico.models import Servicos
 from datetime import datetime
 from django.conf import settings
@@ -20,7 +20,6 @@ from datetime import timedelta
 from django.utils import timezone
 from django.db.models.functions import Now, TruncDate
 import plotly.io as pio
-import plotly.graph_objects as go
 
 from django.db.models import Sum
 from dashboards.view_data import (get_total_area_by_category, plot_horizontal_bar_chart,
@@ -306,9 +305,6 @@ def relatoriodeservicos(request):
         data_objects=dados,
         per_page=20
     )
-
-    print(datafim)
-    print(datastart)
 
     return render(request, 'controle/dashboards/relatorio_de_servicos.html',
                   {'elementos_paginados': elementos_paginados,
@@ -906,9 +902,6 @@ def relatoriomanutencaoequipamentos(request):
                     data_fim__lte = datafim
                 )
 
-    print(datastart)
-    print(datafim)
-
     elementos_paginados = paginate(
         request=request,
         data_objects=dados,
@@ -1122,6 +1115,7 @@ def get_total_area(queryset, area_field='area__area'):
     aggregate_result = queryset.aggregate(total_area=Sum(area_field))
     return aggregate_result['total_area'] if aggregate_result['total_area'] else 0
 
+
 def calculate_areas_and_counts(dados_servicos, status, date_filter=None):
     """
     Calcula a soma das áreas e as contagens de itens para um conjunto de dados filtrados.
@@ -1230,6 +1224,23 @@ def dashboard_gerencial(request):
         'fig_localidade': generate_chart(dados_servicos.filter(data_inicio__gte=seven_days,), 'Agendado', 'area__unidade_jardim__nome', 'Área Total por localidade (Agendado)', 'localidade', '#90ee90').to_html(full_html=False),
         'fig_terreno_andamento': generate_chart(dados_servicos.filter(status='Em andamento'), 'Em andamento', 'area__terreno', 'Área Total por Tipo de Terreno (Em andamento)', 'terreno', '#badbff').to_html(full_html=False),
         'fig_vegetacao_em_andamento': generate_chart(dados_servicos.filter(status='Em andamento'), 'Em andamento', 'area__vegetacao', 'Área Total por Tipo de Vegetação (Em andamento)', 'vegetação', '#90ee90').to_html(full_html=False),
+        'fig_terreno_proximo': generate_chart(
+            dados_servicos.filter(
+                data_inicio__gte=one_day,
+                data_inicio__lte=seven_days
+            ).exclude(
+                status="Em andamento",
+                data_inicio__lte=seven_days
+            ), 'Agendado', 'area__terreno', 'Área Total por Tipo de Terreno (Próximo)', 'terreno', '#badbff'
+        ).to_html(full_html=False),
+        'fig_vegetacao_proximo': generate_chart(dados_servicos.filter(
+                data_inicio__gte=one_day,
+                data_inicio__lte=seven_days
+            ).exclude(
+                status="Em andamento",
+                data_inicio__lte=seven_days
+            ), 'Agendado', 'area__vegetacao', 'Área Total por Tipo de Vegetação (Próximo)', 'vegetação', '#90ee90'
+        ).to_html(full_html=False),
     }
 
     fig_grouped_charts = {
@@ -1460,6 +1471,35 @@ def exportar_relatorio_de_planejamento(request, login_type, id, datastart, dataf
                                          'localidade', '#90ee90'),
     }
 
+
+    fig_charts_proximos = {
+        'fig_terreno': generate_chart(
+            dados_servicos.filter(
+                data_inicio__gte=one_day,
+                data_inicio__lte=seven_days
+            ).exclude(
+                status="Em andamento",
+                data_inicio__lte=seven_days
+            ), 'Agendado', 'area__terreno', 'Área Total por Tipo de Terreno (Próximo)', 'terreno', '#badbff'
+        ),
+        'fig_vegetacao': generate_chart(dados_servicos.filter(
+                data_inicio__gte=one_day,
+                data_inicio__lte=seven_days
+            ).exclude(
+                status="Em andamento",
+                data_inicio__lte=seven_days
+            ), 'Agendado', 'area__vegetacao', 'Área Total por Tipo de Vegetação (Próximo)', 'vegetação', '#90ee90'
+        ),
+        'fig_localidade': generate_chart(dados_servicos.filter(
+                data_inicio__gte=one_day,
+                data_inicio__lte=seven_days
+            ).exclude(
+                status="Em andamento",
+                data_inicio__lte=seven_days
+            ), 'Agendado', 'area__unidade_jardim__nome', 'Área Total por localidade (Próximo)', 'localidade', '#90ee90'
+        ),
+    }
+
     fig_charts_endamento = {
     'fig_terreno_andamento': generate_chart(dados_servicos.filter(status='Em andamento'), 'Em andamento',
                                             'area__terreno', 'Área Total por Tipo de Terreno (Em andamento)',
@@ -1531,6 +1571,17 @@ def exportar_relatorio_de_planejamento(request, login_type, id, datastart, dataf
     start_y = height - 150  # Posição inicial para o conteúdo após o cabeçalho
 
     p.setFont('Helvetica-Bold', 12)
+    p.drawString(x_start, start_y, f"Volume de servicos próximos")
+    start_y -= 20
+
+    start_y, end_page = add_figures_to_pdf(p, fig_charts_proximos, start_y, end_page + 1)
+
+    # Adiciona uma nova página antes de iniciar o segundo laço for
+    p.showPage()
+    draw_header(p)
+    start_y = height - 150  # Posição inicial para o conteúdo após o cabeçalho
+
+    p.setFont('Helvetica-Bold', 12)
     p.drawString(x_start, start_y, f"Volume de servicos em andamento")
     start_y -= 20
 
@@ -1567,3 +1618,300 @@ def exportar_relatorio_de_planejamento(request, login_type, id, datastart, dataf
     response['Content-Disposition'] = 'attachment; filename="relatorio de planejamento de servicos.pdf"'
 
     return response
+
+
+def exportar_excel_planejado(request, login_type, id, datastart, datafim, empresa, unidade, localidades, negocios):
+    # Função que bloqueia a view em caso das variáveis de sessão terem sido alteradas no logout
+    block = block_view(
+        request,
+        login_type=login_type,
+        id=id
+    )
+
+    if block == True:
+        return redirect('logout')
+
+    # Crie um novo arquivo Excel
+    wb = openpyxl.Workbook()
+    ws = wb.active
+
+    # cabeçalhos da tabela exportada
+    headers = [
+        'Tipo de empresa',
+        'Empresa',
+
+        # cabeçalhos referentes a tabela de serviços
+        'ID Agendamento',
+        'Tipo de agendamento',
+        'Descrição do Serviço',
+        'Colaboradores Chamados',
+        'Serviços Solicitados',
+        'Data de Início',
+        # 'Data de conclusao',
+        # 'Antes',
+        # 'Depois',
+        'Status do Serviço',
+
+        # cabeçalhos referentes a tabela de equipamentos
+
+        # 'Marca do Equipamento',
+        # 'Equipamento catálogo',
+        # 'Equipamento Empresa',
+        # 'Tipo equipamento',
+        # 'Equipamento id',
+        # 'vida util equipamento (meses)',
+        # 'Data de aquisição equipamento',
+        # 'Data de desmobilização equipamento',
+        # 'Matrícula do Equipamento',
+
+        # cabeçalhos referentes a tabela de ferramentas
+
+        # 'Marca da Ferramenta',
+        # 'Ferramenta catálogo',
+        # 'Ferramenta empresa',
+        # 'Tipo ferramenta',
+        # 'Ferramenta id',
+        # 'vida util ferramenta (meses)',
+        # 'Data de aquisição ferramenta',
+        # 'Data de desmobilização ferramenta',
+        # 'Matrícula da Ferramenta',
+
+        # cabeçalhos referentes a tabela de materiais
+
+        # 'Material Aplicado',
+        # 'Material Categoria',
+        # 'Forma de consumo',
+        # 'Quantidade',
+        # 'Origem do material',
+
+        # cabeçalhos referentes a tabela de jardins
+        'Área atendida',
+        'Periodicidade',
+        'Área total',
+        'Tipo vegetação',
+        'Tipo Terreno',
+        'Localidade',
+        'Negocio',
+        'Unidade',
+
+        # cabeçalhos referentes a tabela fato serviços
+        # 'ID de serviço',
+        # 'Tempo na área',
+        # 'Colaborador envolvido',
+        # 'Principal servico',
+        # 'Data e hora de chagada',
+        # 'Data e hora de retorno'
+    ]
+
+    # adiciona os cabeçahos no arquivo
+    for col_num, header_title in enumerate(headers, 1):
+        cell = ws.cell(row=1, column=col_num)
+        cell.value = header_title
+
+    # Adicione os dados do relatório ao arquivo Excel
+    dados = colect_dados_planejamento(
+
+    )
+
+    # aplica os filtros enviados como parametro na media que existirem
+    if datastart != 'None':
+        datastart = datetime.strptime(datastart, '%Y-%m-%d')
+
+    if datafim != 'None':
+        datafim = datetime.strptime(datafim, '%Y-%m-%d')
+
+    if empresa != 'None':
+        dados = dados.filter(
+            empresaprestadora=empresa
+        )
+    else:
+        pass
+
+    if unidade != 'None':
+        dados = dados.filter(
+            unidade=unidade
+        )
+    else:
+        pass
+
+    if localidades != 'None':
+        dados = dados.filter(
+            localidade=localidades
+        )
+    else:
+        pass
+
+    if negocios != 'None':
+        dados = dados.filter(
+            tipodeempresa=negocios
+        )
+    else:
+        pass
+
+    if datastart != 'None':
+        dados = dados.filter(
+            data_de_inicio__gte=datastart  # Usar __gte para maior ou igual
+        )
+    else:
+        pass
+
+
+    if datafim != 'None':  # Mudar para datafim ao invés de datastart
+        dados = dados.filter(
+            data_de_inicio__lte=datafim  # Usar __lte para menor ou igual
+        )
+    else:
+        pass
+
+
+    # escreve as linhas do arquivo excel antes de ser exportado
+    for row_num, row in enumerate(dados, start=2):
+        row_data = [
+            row.tipodeempresa, row.empresaprestadora,
+
+            row.id_agendamento, row.tipo_agendamento,
+
+            row.descricao_do_servico, row.colaboradores_chamados, row.servicos_solicitados, row.data_de_inicio,
+
+            # row.data_de_conclusao, row.antes, row.depois,
+
+            row.status_servico,
+
+            # row.equipamento_marca, row.equipamento_catalogo, row.equipamento_empresa, row.tipo_equipamento, row.equipamento_id, row.vida_util_equipamento, row.data_aquisicao_equipamento, row.data_desmobilizacao_equipamento, row.matricula_equipamento,
+            #
+            # row.ferramenta_marca, row.ferramenta_catalogo, row.ferramenta_empresa, row.tipo_ferramenta, row.ferramenta_id, row.vida_util_ferramenta, row.data_aquisicao_ferramenta, row.data_desmobilizacao_ferramenta, row.matricula_ferramenta,
+
+            # row.material_aplicado, row.material_categoria, row.forma_consumo, row.qtd, row.tipo_material,
+
+            row.area_atendida, row.periodicidade_de_retorno,
+
+            row.area_total, row.tipo_vegetacao, row.tipo_terreno, row.localidade, row.tiponegocio, row.unidade,
+
+            # row.id_servico, row.tempo_na_area, row.colaborador_envolvido, row.principalservico,
+
+            # row.data_hora_chegada, row.data_hora_retorno
+        ]
+        for col_num, value in enumerate(row_data, start=1):
+            cell = ws.cell(
+                row=row_num,
+                column=col_num
+            )
+            cell.value = value
+
+    # Defina o nome do arquivo e o tipo de resposta
+    # cria uma resposta http com o tipo de conteuso
+    response = HttpResponse(
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+    # cria um anexo que ´instalado no lado cliente
+    response['Content-Disposition'] = 'attachment; filename="relatorio de servicos.xlsx"'
+
+    # Salve o arquivo Excel
+    wb.save(response)
+
+    # retorna a resposta
+    # linha obrigatória
+    # ou o sistema quebra
+    return response
+
+
+def relatoriodeservicosplanejados(request):
+    login_type = request.session['login_type']
+    id = request.session['login_id']
+
+
+    # Função que bloqueia a view em caso das variáveis de sessão terem sido alteradas no logout
+    block = block_view(
+        request,
+        login_type=login_type,
+        id=id
+    )
+
+    if block == True:
+        return redirect('logout')
+
+
+    empresas = None
+    unidades = None
+    localidades = None
+    negocios = None
+    datastart = None
+    datafim = None
+
+    # Adicione os dados do relatório ao arquivo Excel
+    dados = colect_dados_planejamento().filter(
+        status_servico__in = ["Agendado", "Em andamento"]
+    )[:50]
+
+    # formulário que envia os filtros para serem aplicados
+    forms_filtro = FiltroTableForms()
+
+    if request.method == 'POST':
+        form = FiltroTableForms(request.POST)
+        if form.is_valid():
+            # Processar os dados do formulário
+            # os dados do formulário não são enviados para o banco de dados
+            # são processado como paramtros para serem aplicados como filtro
+            empresas = form.cleaned_data['empresa']
+            unidades = form.cleaned_data['unidade']
+            localidades = form.cleaned_data.get('localidade')
+            datastart = form.cleaned_data.get('datastart')
+            datafim = form.cleaned_data.get('datafim')
+
+            dados = colect_dados_planejamento().filter(
+                status_servico__in=["Agendado", "Em andamento"]
+            )
+            # aplicação dos filtros na medida que for nescessário
+            if empresas:
+                dados = dados.filter(
+                    empresaprestadora=str(empresas).split("|")[0].strip()
+                )
+                empresas = str(empresas).split("|")[0].strip()
+
+            if unidades:
+                dados = dados.filter(
+                    unidade=unidades
+                )
+                unidades = unidades
+
+            if localidades:
+                dados = dados.filter(
+                    localidade=str(localidades).split("|")[1].strip(),
+                )
+                localidades = str(localidades).split("|")[1].strip()
+
+
+            if negocios:
+                dados = dados.filter(
+                    localidade=str(localidades).split("|")[2].strip(),
+                )
+                negocios = str(localidades).split("|")[2].strip()
+
+
+            if datastart:
+                dados = dados.filter(
+                    data_de_inicio__gte=datastart  # Usar __gte para maior ou igual
+                )
+
+            if datafim:  # Mudar para datafim ao invés de datastart
+                dados = dados.filter(
+                    data_de_inicio__lte=datafim  # Usar __lte para menor ou igual
+                )
+
+    elementos_paginados = paginate(
+        request=request,
+        data_objects=dados,
+        per_page=20
+    )
+
+    return render(request, 'controle/dashboards/relatorio_de_servicos_concluidos.html',
+                  {'elementos_paginados': elementos_paginados,
+                   'forms_filtro': forms_filtro,
+                   'empresas': empresas,
+                   'unidades': unidades,
+                   'localidades': localidades,
+                   'negocios':negocios,
+                   'datastart': datastart,
+                   'datafim': datafim
+                   }
+    )
