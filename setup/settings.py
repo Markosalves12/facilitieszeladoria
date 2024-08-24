@@ -31,8 +31,8 @@ SECRET_KEY = str(os.getenv('SECRET_KEY'))
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'facilitymanagement41@gmail.com'
-EMAIL_HOST_PASSWORD = 'kylp pjjm gbfq bubd'
+EMAIL_HOST_USER = 'emailsmtp'
+EMAIL_HOST_PASSWORD = 'senhasmtp'
 EMAIL_USE_SSL = False
 
 # SECURITY WARNING: don't run with debug turned on in production!
